@@ -18,10 +18,13 @@ class Board:
         self.current_sequence: list[tuple[int, int]] = []
         self.is_selecting: bool = False
 
+        # TODO: add seeded random
+        self.seed = random.SystemRandom().randbytes(16).hex()
+        self.random = random.Random(bytes.fromhex(self.seed))
 
-    @staticmethod
-    def pure_random():
-        return random.randint(ord('A'), ord('Z'))
+    def pure_random(self):
+        # TODO: add weighted random
+        return self.random.randint(ord('A'), ord('Z'))
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
