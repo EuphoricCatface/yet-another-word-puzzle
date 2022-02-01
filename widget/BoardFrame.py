@@ -28,8 +28,8 @@ class BoardWidget(QFrame):
         ]
         for x, column in enumerate(self.button_columns):
             for y, e in enumerate(column):
-                e.move(x * 40, 200 - (y + 1) * 40)
-                e.setFixedSize(40, 40)
+                e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
+                e.setFixedSize(30, 30)
                 e.setText(chr(self.board.columns[x][y]))
                 e.x = x
                 e.y = y
