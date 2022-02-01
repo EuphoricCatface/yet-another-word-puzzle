@@ -11,6 +11,7 @@ class Board:
         # Columns don't interact between each other. Let's treat each column as a list
         # The first column is on the left, and the first element is at the bottom
         self.columns: list[list[int]] = []
+        self.fall_distance: list[list[int]] = []
         self.empty()
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
 
@@ -28,12 +29,21 @@ class Board:
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
+        self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
 
     def fill_prepare(self):
-        for column in self.columns:
+        for i, column in enumerate(self.columns):
             to_add = column.count(0)
             for _ in range(to_add):
                 column.append(self.pure_random())
+
+            temp_fall_distance = 0
+            for e in column:
+                if e == 0:
+                    temp_fall_distance += 1
+                    self.fall_distance[i].append(-1)
+                    continue
+                self.fall_distance[i].append(temp_fall_distance)
 
     def eliminate_empty(self):
         for column in self.columns:
