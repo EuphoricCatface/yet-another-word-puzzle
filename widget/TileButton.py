@@ -38,3 +38,4 @@ class TileButton(QPushButton):
 
     def dropEvent(self, event:QDropEvent) -> None:
         print("event drop: tile")
+        self.parent().end_tile()

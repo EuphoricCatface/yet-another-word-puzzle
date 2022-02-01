@@ -65,7 +65,7 @@ class BoardWidget(QFrame):
             event.ignore()
 
         print("event drop: board")
-        event.setDropAction(Qt.MoveAction)
+        self.end_tile()
         event.accept()
 
     def next_tile(self, x, y):
@@ -78,3 +78,11 @@ class BoardWidget(QFrame):
 
         x_, y_ = self.board.current_coord_seq[-1]
         self.button_columns[x_][y_].setChecked(True)
+
+    def end_tile(self):
+        word = self.board.end_select()
+        for coord in self.board.current_coord_seq:
+            x, y = coord
+            self.button_columns[x][y].setChecked(False)
+        print("".join(word))
+        self.board.selection_clear()
