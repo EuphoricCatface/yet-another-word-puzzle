@@ -18,6 +18,7 @@ class Board:
         self.current_chr_seq: list[str] = []
         self.current_coord_seq: list[tuple[int, int]] = []
         self.is_selecting: bool = False
+        self.deselect: [tuple[int, int] | None] = None
 
         # TODO: add seeded random
         self.seed = random.SystemRandom().randbytes(16).hex()
@@ -30,6 +31,7 @@ class Board:
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
         self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
+        self.deselect = None
 
     def fill_prepare(self):
         for i, column in enumerate(self.columns):
@@ -66,6 +68,7 @@ class Board:
         return self.current_chr_seq
 
     def next_select(self, x: int, y: int) -> (bool, list[str]):
+        self.deselect = None
         if x < 0 or \
                 y < 0 or \
                 x >= BOARD_WIDTH or\
@@ -83,7 +86,7 @@ class Board:
         if len(self.current_coord_seq) >= 2 and \
                 self.current_coord_seq[-2] == (x, y):
             # Falling back
-            self.current_coord_seq.pop()
+            self.deselect = self.current_coord_seq.pop()
             self.current_chr_seq.pop()
             return True, self.current_chr_seq
 
