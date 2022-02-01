@@ -12,10 +12,13 @@ class TileButton(QPushButton):
         self.setAcceptDrops(True)
         # self.character = char
 
+        self.x = 0
+        self.y = 0
+
     def mousePressEvent(self, e: QMouseEvent) -> None:
         print(e.pos())
         print(self.text())
-        self.parent().start_drag(self.mapToParent(e.pos()))
+        self.parent().start_drag(self.x, self.y)
 
     def dragEnterEvent(self, event:QDragEnterEvent) -> None:
         if event.source() != self.parent():
@@ -24,14 +27,14 @@ class TileButton(QPushButton):
             return
 
         print("dragEnter: tile")
-        self.setChecked(True)
+        self.parent().next_tile(self.x, self.y)
         event.accept()
 
-    def dragLeaveEvent(self, event:QDragLeaveEvent) -> None:
-        self.setChecked(False)
-
-        print("dragLeave: tile")
-        super(TileButton, self).dragLeaveEvent(event)
+    # def dragLeaveEvent(self, event:QDragLeaveEvent) -> None:
+    #     self.setChecked(False)
+    #
+    #     print("dragLeave: tile")
+    #     super(TileButton, self).dragLeaveEvent(event)
 
     def dropEvent(self, event:QDropEvent) -> None:
         print("event drop: tile")
