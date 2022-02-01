@@ -4,6 +4,8 @@ from PySide6.QtCore import Qt, QPoint
 from PySide6.QtCore import QMimeData, QByteArray
 from widget import TileButton
 
+from backend import board
+
 TILE_COLUMNS = 5
 TILE_ROWS = 5
 
@@ -16,6 +18,10 @@ class BoardWidget(QFrame):
         self.setFrameStyle(QFrame.Sunken | QFrame.StyledPanel)
         self.setAcceptDrops(True)
 
+        self.board = board.Board()
+        self.board.fill_prepare()
+        self.board.eliminate_empty()
+
         button_columns: [list[list[TileButton.TileButton]]] = [
             [TileButton.TileButton(self) for _ in range(5)]
             for _ in range(5)
@@ -24,6 +30,7 @@ class BoardWidget(QFrame):
             for y, e in enumerate(column):
                 e.move(x * 40, 200 - (y + 1) * 40)
                 e.setFixedSize(40, 40)
+                e.setText(chr(self.board.columns[x][y]))
 
     def start_drag(self, pos: QPoint) -> None:
         print(pos)
