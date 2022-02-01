@@ -14,8 +14,8 @@ class Board:
         self.empty()
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
 
-        self.current_chr_list: list[str] = []
-        self.current_sequence: list[tuple[int, int]] = []
+        self.current_chr_seq: list[str] = []
+        self.current_coord_seq: list[tuple[int, int]] = []
         self.is_selecting: bool = False
 
         # TODO: add seeded random
@@ -47,13 +47,13 @@ class Board:
                 x >= BOARD_WIDTH or\
                 y >= BOARD_WIDTH:
             raise IndexError
-        assert not (self.current_chr_list or self.current_sequence)
+        assert not (self.current_chr_seq or self.current_coord_seq)
         assert self.is_selecting is False
 
-        self.current_chr_list.append(chr(self.columns[x][y]))
-        self.current_sequence.append((x, y))
+        self.current_chr_seq.append(chr(self.columns[x][y]))
+        self.current_coord_seq.append((x, y))
         self.is_selecting = True
-        return self.current_chr_list
+        return self.current_chr_seq
 
     def next_select(self, x: int, y: int) -> (bool, list[str]):
         if x < 0 or \
@@ -61,8 +61,8 @@ class Board:
                 x >= BOARD_WIDTH or\
                 y >= BOARD_WIDTH:
             raise IndexError
-        assert len(self.current_chr_list) == len(self.current_sequence)
-        assert self.current_chr_list and self.current_sequence
+        assert len(self.current_chr_seq) == len(self.current_coord_seq)
+        assert self.current_chr_seq and self.current_coord_seq
 
         if ALLOW_START_SELECTING_WITH_NEXT_SELECTION:
             if self.is_selecting is False:
@@ -70,39 +70,39 @@ class Board:
         else:
             assert self.is_selecting is True
 
-        if len(self.current_sequence) >= 2 and \
-                self.current_sequence[-2] == (x, y):
+        if len(self.current_coord_seq) >= 2 and \
+                self.current_coord_seq[-2] == (x, y):
             # Falling back
-            self.current_sequence.pop()
-            self.current_chr_list.pop()
-            return True, self.current_chr_list
+            self.current_coord_seq.pop()
+            self.current_chr_seq.pop()
+            return True, self.current_chr_seq
 
-        if (x, y) in self.current_sequence:
+        if (x, y) in self.current_coord_seq:
             # This is not a new tile
-            return False, self.current_chr_list
+            return False, self.current_chr_seq
 
-        current = self.current_sequence[-1]
+        current = self.current_coord_seq[-1]
         if current == (x, y):
             # The tile is same as the current head
-            return False, self.current_chr_list
+            return False, self.current_chr_seq
         d_x = current[0] - x
         d_y = current[1] - y
         if d_x not in (-1, 0, 1) or \
                 d_y not in (-1, 0, 1):
             # this is not a neighbor of the current head
-            return False, self.current_chr_list
+            return False, self.current_chr_seq
 
-        self.current_chr_list.append(chr(self.columns[x][y]))
-        self.current_sequence.append((x, y))
-        return True, self.current_chr_list
+        self.current_chr_seq.append(chr(self.columns[x][y]))
+        self.current_coord_seq.append((x, y))
+        return True, self.current_chr_seq
 
     def end_select(self):
-        assert len(self.current_chr_list) == len(self.current_sequence)
-        assert self.current_chr_list and self.current_sequence
+        assert len(self.current_chr_seq) == len(self.current_coord_seq)
+        assert self.current_chr_seq and self.current_coord_seq
         assert self.is_selecting is True
 
         self.is_selecting = False
-        return self.current_chr_list
+        return self.current_chr_seq
 
     @staticmethod
     def get_board_rot(columns):
@@ -130,7 +130,7 @@ class Board:
         # The logic of repr is no more tied to `self`
         #  in order to reflect current sequence on the board
         # Might as well just make it a separate staticmethod
-        return self.get_board_repr(self.columns, self.current_sequence)
+        return self.get_board_repr(self.columns, self.current_coord_seq)
 
     def get_board_columns_repr(self):
         characterized_ = [list(map(chr, column)) for column in self.columns]
@@ -142,13 +142,13 @@ class Board:
     def selection_clear(self):
         assert self.is_selecting is False
 
-        self.current_chr_list.clear()
-        self.current_sequence.clear()
+        self.current_chr_seq.clear()
+        self.current_coord_seq.clear()
 
     def remove_selected_tiles(self):
         assert self.is_selecting is False
 
-        for coord in self.current_sequence:
+        for coord in self.current_coord_seq:
             self.columns[coord[0]][coord[1]] = 0
 
     def selection_eval(self):
@@ -177,7 +177,7 @@ def test_main():
             board.eliminate_empty()
             while True:
                 print(board)
-                print(f"current word = {board.current_chr_list}")
+                print(f"current word = {board.current_chr_seq}")
                 cmd = input("move? ")
                 cmd.strip()
                 cmd_list = cmd.split()
