@@ -24,6 +24,10 @@ class Board:
         self.seed = random.SystemRandom().randbytes(16).hex()
         self.random = random.Random(bytes.fromhex(self.seed))
 
+        # TODO: add scoring
+        # TODO: add scores for letters
+        # TODO: add double/triple letter/word bonus
+
     def pure_random(self):
         # TODO: add weighted random
         return self.random.randint(ord('A'), ord('Z'))
