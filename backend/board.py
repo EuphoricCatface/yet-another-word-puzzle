@@ -79,7 +79,9 @@ class Board:
         for i, column in enumerate(self.columns):
             to_add = column.count(0)
             for _ in range(to_add):
-                column.append(self.inverse_weighted_random())
+                rand = self.inverse_weighted_random()
+                assert rand is not None
+                column.append(rand)
 
             self.fall_distance[i] = []
             temp_fall_distance = 0
