@@ -51,6 +51,7 @@ class Board:
             for _ in range(to_add):
                 column.append(self.pure_random())
 
+            self.fall_distance[i] = []
             temp_fall_distance = 0
             for e in column:
                 if e == 0:
