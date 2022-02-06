@@ -4,7 +4,7 @@ class Evaluation:
     @classmethod
     def load(cls):
         print("loading dictionary")
-        with open("dictionary.txt") as f:
+        with open("backend/dictionary.txt") as f:
             for line in f:
                 line = line.strip()
                 if line.startswith("#"):

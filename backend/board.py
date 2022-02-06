@@ -1,6 +1,8 @@
 import random
 from math import lcm
 
+from backend import word_evaluation
+
 BOARD_WIDTH = 5
 BOARD_HEIGHT = 5
 
@@ -208,8 +210,10 @@ class Board:
 
     def selection_eval(self):
         # NYI: search dictionary
-        print("DUMMY: word is always correct")
-        rtn = True
+        # print("DUMMY: word is always correct")
+        seq_eval = self.current_chr_seq.copy()
+
+        rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
 
         if rtn:
             self.remove_selected_tiles()
