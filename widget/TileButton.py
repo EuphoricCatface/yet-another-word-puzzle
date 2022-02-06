@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QPushButton, QLabel
 
-from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent
+from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent, QResizeEvent
+from backend.board import LETTER_SCORE
 
 
 class TileButton(QPushButton):
@@ -15,11 +16,28 @@ class TileButton(QPushButton):
         self.y_board = 0
 
         # TODO: Show score for letter
+        self.letter_label = QLabel(self)
+
+    def resizeEvent(self, event:QResizeEvent) -> None:
+        self.letter_label_resize()
+        super(TileButton, self).resizeEvent(event)
+
+    def letter_label_resize(self):
+        sz = self.size()
+        self.letter_label.setGeometry(
+            0, 0,
+            int(sz.width() / 2), int(sz.height() / 2)
+        )
+        self.letter_label.setStyleSheet("font-size: 8px; text-align: center;")
 
     def set_char(self, char: str):
         # TODO: Handle other infos, score and bonus
         self.character = char
         self.setText(char)
+        if char != ' ':
+            self.letter_label.setText(
+                ' ' + str(LETTER_SCORE[ord(char) - ord('A')])
+            )
 
     def set_ascii(self, ascii_: int):
         if ascii_ == 0:
