@@ -74,8 +74,6 @@ class BoardWidget(QFrame):
 
         for x, column in enumerate(animation_prepare):
             remove_later = []
-            # TODO: make remove_later into member variable, and then destroy in collect_empty_button
-            #  Make fancy animation before elimination
             for y, distance in enumerate(column):
                 if distance == 0:
                     continue
