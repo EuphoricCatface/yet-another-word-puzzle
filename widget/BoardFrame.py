@@ -30,6 +30,7 @@ class BoardWidget(QFrame):
         self.board_update()
 
     def board_update(self):
+        # TODO: falling animation
         self.board.fill_prepare()
         self.board.eliminate_empty()
 
@@ -101,4 +102,6 @@ class BoardWidget(QFrame):
             x, y = coord
             self.button_columns[x][y].setChecked(False)
         print("".join(word), flush=True)
-        self.board.selection_clear()
+
+        self.board.selection_eval()
+        self.board_update()
