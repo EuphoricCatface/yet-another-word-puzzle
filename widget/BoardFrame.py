@@ -39,8 +39,8 @@ class BoardWidget(QFrame):
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
                 e.setFixedSize(30, 30)
                 e.set_ascii(self.board.columns[x][y])
-                e.x = x
-                e.y = y
+                e.x_board = x
+                e.y_board = y
 
     def board_fill_prepare(self):
         self.board.fill_prepare()

@@ -11,8 +11,8 @@ class TileButton(QPushButton):
         self.setAcceptDrops(True)
         self.character = ' '
 
-        self.x = 0
-        self.y = 0
+        self.x_board = 0
+        self.y_board = 0
 
         # TODO: Show score for letter
 
@@ -37,7 +37,7 @@ class TileButton(QPushButton):
     def mousePressEvent(self, e: QMouseEvent) -> None:
         print(e.pos())
         # print(self.text())
-        self.parent().start_drag(self.x, self.y)
+        self.parent().start_drag(self.x_board, self.y_board)
 
     def dragEnterEvent(self, event:QDragEnterEvent) -> None:
         if event.source() != self.parent():
@@ -46,7 +46,7 @@ class TileButton(QPushButton):
             return
 
         print("dragEnter: tile")
-        self.parent().next_tile(self.x, self.y)
+        self.parent().next_tile(self.x_board, self.y_board)
         event.accept()
 
     def dropEvent(self, event:QDropEvent) -> None:
