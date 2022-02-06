@@ -44,6 +44,7 @@ class BoardWidget(QFrame):
         print((x, y))
         print("Board")
         self.board.start_select(x, y)
+        self.button_columns[x][y].setChecked(True)
 
         mime_data = QMimeData()
         item_data = QByteArray()
@@ -75,15 +76,16 @@ class BoardWidget(QFrame):
         event.accept()
 
     def next_tile(self, x, y):
-        if not self.board.next_select(x, y):
+        update, char_list = self.board.next_select(x, y)
+        if not update:
             return
 
         if self.board.deselect:
             x_, y_ = self.board.deselect
             self.button_columns[x_][y_].setChecked(False)
+        else:
+            self.button_columns[x][y].setChecked(True)
 
-        x_, y_ = self.board.current_coord_seq[-1]
-        self.button_columns[x_][y_].setChecked(True)
 
     def end_tile(self):
         word = self.board.end_select()
