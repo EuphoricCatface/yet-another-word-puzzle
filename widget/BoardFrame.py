@@ -37,7 +37,7 @@ class BoardWidget(QFrame):
     def game_init(self):
         self.board.fill_prepare()
         self.board_sync()
-        self.drop_animation()
+        QTimer.singleShot(1000, self.drop_animation)
         self.board.eliminate_empty()
         self.board_sync()
 
