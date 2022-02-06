@@ -35,6 +35,12 @@ class BoardWidget(QFrame):
                 e.y = y
 
     def start_drag(self, x, y) -> None:
+        if self.board.is_selecting:
+            print("Previous drag seem to have ended up elsewhere")
+            print("-> Ignoring new drag")
+            self.end_tile()
+            return
+
         print((x, y))
         print("Board")
         self.board.start_select(x, y)
