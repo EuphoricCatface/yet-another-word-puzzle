@@ -13,7 +13,6 @@ TILE_ROWS = 5
 
 class BoardWidget(QFrame):
     char_list_update = Signal(str)
-    # FIXME: sync() logic is not ideal
 
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
@@ -38,8 +37,6 @@ class BoardWidget(QFrame):
         self.board.fill_prepare()
         self.board_sync()
         QTimer.singleShot(1000, self.drop_animation)
-        self.board.eliminate_empty()
-        self.board_sync()
 
     def board_sync(self):
         for x, column in enumerate(self.board.columns):
@@ -52,7 +49,6 @@ class BoardWidget(QFrame):
                 e.set_ascii(ascii_)
                 e.x_board = x
                 e.y_board = y
-                # e.show()
 
     def drop_animation(self):
         def animate(pos: QPoint, dist: int, animation_: QPropertyAnimation):
@@ -67,8 +63,12 @@ class BoardWidget(QFrame):
             animation_.setEasingCurve(QEasingCurve.InQuad)
             return animation_
 
+        # Update the actual board before the animation,
+        #  Collect UI elements after the animation
+        self.board.eliminate_empty()
         self.drop_animation_group = QParallelAnimationGroup()
-        # self.drop_animation_group.finished.connect(self.board_sync)
+        self.drop_animation_group.finished.connect(self.collect_empty_button)
+
         animation_prepare = self.board.fall_distance
 
         for x, column in enumerate(animation_prepare):
@@ -167,5 +167,3 @@ class BoardWidget(QFrame):
             self.board.fill_prepare()
             self.board_sync()
             self.drop_animation()
-            self.board.eliminate_empty()
-            self.collect_empty_button()
