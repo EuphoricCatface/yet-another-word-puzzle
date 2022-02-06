@@ -21,13 +21,18 @@ class BoardWidget(QFrame):
         self.setAcceptDrops(True)
 
         self.board = board.Board()
-        self.board.fill_prepare()
-        self.board.eliminate_empty()
 
         self.button_columns: [list[list[TileButton.TileButton]]] = [
             [TileButton.TileButton(self) for _ in range(5)]
             for _ in range(5)
         ]
+
+        self.board_update()
+
+    def board_update(self):
+        self.board.fill_prepare()
+        self.board.eliminate_empty()
+
         for x, column in enumerate(self.button_columns):
             for y, e in enumerate(column):
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
