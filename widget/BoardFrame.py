@@ -84,5 +84,5 @@ class BoardWidget(QFrame):
         for coord in self.board.current_coord_seq:
             x, y = coord
             self.button_columns[x][y].setChecked(False)
-        print("".join(word))
+        print("".join(word), flush=True)
         self.board.selection_clear()

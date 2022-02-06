@@ -17,7 +17,7 @@ class TileButton(QPushButton):
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         print(e.pos())
-        print(self.text())
+        # print(self.text())
         self.parent().start_drag(self.x, self.y)
 
     def dragEnterEvent(self, event:QDragEnterEvent) -> None:
