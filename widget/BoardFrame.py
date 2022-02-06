@@ -31,6 +31,7 @@ class BoardWidget(QFrame):
         self.game_init()
 
         self.drop_animation_group = QParallelAnimationGroup()
+        self.to_be_collected: list[TileButton.TileButton] = []
 
     @Slot()
     def game_init(self):
@@ -82,7 +83,7 @@ class BoardWidget(QFrame):
                 target = self.button_columns[x][y]
                 if distance == -1:
                     target.set_ascii(0)
-                    target.close()
+                    self.to_be_collected.append(target)
                     remove_later.append(target)
                     continue
 
@@ -100,7 +101,11 @@ class BoardWidget(QFrame):
         self.drop_animation_group.start()
 
     def collect_empty_button(self):
-        pass
+        count = 0
+        while self.to_be_collected:
+            self.to_be_collected.pop().close()
+            count += 1
+        # print(f"closed {count} buttons")
 
     def start_drag(self, x, y) -> None:
         if self.board.is_selecting:
