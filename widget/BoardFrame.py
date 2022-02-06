@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFrame
 from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtCore import QMimeData, QByteArray, QTimer, QPoint
 from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QEasingCurve
 from widget import TileButton
@@ -28,11 +28,17 @@ class BoardWidget(QFrame):
             for _ in range(5)
         ]
 
-        self.board.fill_prepare()
-        self.board.eliminate_empty()
-        self.board_sync()
+        self.game_init()
 
         self.drop_animation_group = QParallelAnimationGroup()
+
+    @Slot()
+    def game_init(self):
+        self.board.fill_prepare()
+        self.board_sync()
+        self.drop_animation()
+        self.board.eliminate_empty()
+        self.board_sync()
 
     def board_sync(self):
         for x, column in enumerate(self.board.columns):
