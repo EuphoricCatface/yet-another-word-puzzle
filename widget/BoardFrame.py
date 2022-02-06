@@ -166,7 +166,9 @@ class BoardWidget(QFrame):
             self.button_columns[x][y].setChecked(False)
         print("".join(word), flush=True)
 
-        if self.board.selection_eval():
+        score = self.board.selection_eval()
+        if score > 0:
+            print(f"{score=}")
             self.board.fill_prepare()
             self.board_sync()
             self.drop_animation()

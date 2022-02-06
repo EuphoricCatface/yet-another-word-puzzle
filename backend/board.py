@@ -211,6 +211,7 @@ class Board:
     def selection_eval(self):
         # NYI: search dictionary
         # print("DUMMY: word is always correct")
+        score = -1
         seq_eval = self.current_chr_seq.copy()
         while 'Q' in seq_eval:
             seq_eval[seq_eval.index('Q')] = 'QU'
@@ -218,9 +219,12 @@ class Board:
         rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
 
         if rtn:
+            score = 0
+            for i in self.current_chr_seq:
+                score += LETTER_SCORE[ord(i) - ord('A')]
             self.remove_selected_tiles()
         self.selection_clear()
-        return rtn
+        return score
 
     # TODO: Add undo / redo
     #  Restore random state on undo
