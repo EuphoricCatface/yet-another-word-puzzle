@@ -1,4 +1,5 @@
 import random
+from math import lcm
 
 BOARD_WIDTH = 5
 BOARD_HEIGHT = 5
@@ -37,8 +38,35 @@ class Board:
         # TODO: add double/triple letter/word bonus
 
     def pure_random(self):
-        # TODO: add weighted random
         return self.random.randint(ord('A'), ord('Z'))
+
+    def complementary_weighted_random(self):
+        if "reverse_score" not in Board.complementary_weighted_random.__dict__:
+            print("random_init")
+            Board.complementary_weighted_random.reverse_score = []
+            sum_ = max(LETTER_SCORE) + 1
+            for i in LETTER_SCORE:
+                Board.complementary_weighted_random.reverse_score.append(sum_ - i)
+            Board.complementary_weighted_random.sum = sum(Board.complementary_weighted_random.reverse_score)
+        rand = self.random.randint(0, Board.complementary_weighted_random.sum)
+        for nth, score in enumerate(Board.complementary_weighted_random.reverse_score):
+            rand -= score
+            if rand < 0:
+                return nth + ord('A')
+
+    def inverse_weighted_random(self):
+        if "inverse_score" not in Board.inverse_weighted_random.__dict__:
+            print("random_init")
+            Board.inverse_weighted_random.inverse_score = []
+            lcm_ = lcm(*LETTER_SCORE)
+            for i in LETTER_SCORE:
+                Board.inverse_weighted_random.inverse_score.append(lcm_ / i)
+            Board.inverse_weighted_random.sum = sum(Board.inverse_weighted_random.inverse_score)
+        rand = self.random.randint(0, Board.inverse_weighted_random.sum)
+        for nth, score in enumerate(Board.inverse_weighted_random.inverse_score):
+            rand -= score
+            if rand < 0:
+                return nth + ord('A')
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
@@ -49,7 +77,7 @@ class Board:
         for i, column in enumerate(self.columns):
             to_add = column.count(0)
             for _ in range(to_add):
-                column.append(self.pure_random())
+                column.append(self.inverse_weighted_random())
 
             self.fall_distance[i] = []
             temp_fall_distance = 0
