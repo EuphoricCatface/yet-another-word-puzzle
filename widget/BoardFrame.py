@@ -13,6 +13,7 @@ TILE_ROWS = 5
 
 class BoardWidget(QFrame):
     char_list_update = Signal(str)
+    # FIXME: sync() logic is not ideal
 
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
@@ -66,7 +67,7 @@ class BoardWidget(QFrame):
             return animation_
 
         self.drop_animation_group = QParallelAnimationGroup()
-        self.drop_animation_group.finished.connect(self.board_sync)
+        # self.drop_animation_group.finished.connect(self.board_sync)
         animation_prepare = self.board.fall_distance
         dummy_fall_unit = 40
 
