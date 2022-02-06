@@ -35,20 +35,20 @@ class TileButton(QPushButton):
         self.set_char(char)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
-        print(e.pos())
+        # print(e.pos())
         # print(self.text())
         self.parent().start_drag(self.x_board, self.y_board)
 
     def dragEnterEvent(self, event:QDragEnterEvent) -> None:
         if event.source() != self.parent():
-            print("dragEnter_no: tile")
+            # print("dragEnter_no: tile")
             event.ignore()
             return
 
-        print("dragEnter: tile")
+        # print("dragEnter: tile")
         self.parent().next_tile(self.x_board, self.y_board)
         event.accept()
 
     def dropEvent(self, event:QDropEvent) -> None:
-        print("event drop: tile")
+        # print("event drop: tile")
         self.parent().end_tile()

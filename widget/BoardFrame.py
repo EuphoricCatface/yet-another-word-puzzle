@@ -109,8 +109,8 @@ class BoardWidget(QFrame):
             self.end_tile()
             return
 
-        print((x, y))
-        print("Board")
+        # print((x, y))
+        # print("Board")
         self.board.start_select(x, y)
         self.button_columns[x][y].setChecked(True)
 
@@ -123,23 +123,23 @@ class BoardWidget(QFrame):
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         if event.source() != self:
-            print("dragEnter_no: board")
+            # print("dragEnter_no: board")
             event.ignore()
             return
 
-        print("dragEnter: board")
+        # print("dragEnter: board")
         event.accept()
 
     def dragLeaveEvent(self, event: QDragLeaveEvent) -> None:
-        print("dragLeave: board")
+        # print("dragLeave: board")
         super(BoardWidget, self).dragLeaveEvent(event)
 
     def dropEvent(self, event:QDropEvent) -> None:
         if event.source() != self:
-            print("dragDrop_no: board")
+            # print("dragDrop_no: board")
             event.ignore()
 
-        print("event drop: board")
+        # print("event drop: board")
         self.end_tile()
         event.accept()
 
