@@ -30,33 +30,45 @@ class BoardWidget(QFrame):
 
         self.board.fill_prepare()
         self.board.eliminate_empty()
-        self.board_update()
+        self.board_sync()
 
-        self.animation_group = QParallelAnimationGroup()
+        self.drop_animation_group = QParallelAnimationGroup()
 
-    def board_update(self):
-        # TODO: falling animation
-
-        for x, column in enumerate(self.button_columns):
-            for y, e in enumerate(column):
+    def board_sync(self):
+        for x, column in enumerate(self.board.columns):
+            for y, ascii_ in enumerate(column):
+                if len(self.button_columns[x]) == y:
+                    self.button_columns[x].append(TileButton.TileButton(self))
+                e = self.button_columns[x][y]
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
                 e.setFixedSize(30, 30)
-                e.set_ascii(self.board.columns[x][y])
+                e.set_ascii(ascii_)
                 e.x_board = x
                 e.y_board = y
-                e.show()
+                # e.show()
 
-    def board_fill_prepare(self):
-        self.board.fill_prepare()
-        self.animation_group = QParallelAnimationGroup()
+    def drop_animation(self):
+        def animate(pos: QPoint, animation_: QPropertyAnimation):
+            current_pos = pos
+            new_pos = QPoint(
+                current_pos.x(), current_pos.y() + distance * dummy_fall_unit,
+            )
+            animation_.setDuration(200)
+            animation_.setStartValue(current_pos)
+            animation_.setEndValue(new_pos)
+            animation_.setEasingCurve(QEasingCurve.InQuad)
+            return animation_
+
+        self.drop_animation_group = QParallelAnimationGroup()
+        self.drop_animation_group.finished.connect(self.board_sync)
         animation_prepare = self.board.fall_distance
         dummy_fall_unit = 40
 
         for x, column in enumerate(animation_prepare):
             remove_later = []
+            # TODO: make remove_later into member variable, and then destroy in collect_empty_button
+            #  Make fancy animation before elimination
             for y, distance in enumerate(column):
-                if y >= TILE_ROWS:
-                    continue
                 if distance == 0:
                     continue
 
@@ -64,31 +76,22 @@ class BoardWidget(QFrame):
                 if distance == -1:
                     target.setText(' ')
                     target.close()
-                    self.button_columns[x].append(TileButton.TileButton(self))
                     remove_later.append(target)
                     continue
 
-                current_geo = target.pos()
-                new_geo = QPoint(
-                    current_geo.x(), current_geo.y() + distance * dummy_fall_unit,
-                )
+                target.show()
                 animation = QPropertyAnimation(target, QByteArray('pos'), target)
-                animation.setDuration(200)
-                animation.setStartValue(current_geo)
-                animation.setEndValue(new_geo)
-                animation.setEasingCurve(QEasingCurve.InQuad)
-                self.animation_group.addAnimation(animation)
+                self.drop_animation_group.addAnimation(
+                    animate(target.pos(), animation)
+                )
+
             for i in remove_later:
                 self.button_columns[x].remove(i)
 
-        self.animation_group.start()
-        print("animation group started")
-        QTimer.singleShot(250, self.board_eliminate_empty)
-        print("non block")
+        self.drop_animation_group.start()
 
-    def board_eliminate_empty(self):
-        self.board.eliminate_empty()
-        self.board_update()
+    def collect_empty_button(self):
+        pass
 
     def start_drag(self, x, y) -> None:
         if self.board.is_selecting:
@@ -151,5 +154,9 @@ class BoardWidget(QFrame):
             self.button_columns[x][y].setChecked(False)
         print("".join(word), flush=True)
 
-        self.board.selection_eval()
-        self.board_fill_prepare()
+        if self.board.selection_eval():
+            self.board.fill_prepare()
+            self.board_sync()
+            self.drop_animation()
+            self.board.eliminate_empty()
+            self.collect_empty_button()
