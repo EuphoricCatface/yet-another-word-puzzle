@@ -86,8 +86,9 @@ class BoardWidget(QFrame):
                     remove_later.append(target)
                     continue
 
-                target.show()
                 target.y_board -= distance
+                if target.y_board < TILE_ROWS:
+                    target.show()
                 animation = QPropertyAnimation(target, QByteArray('pos'), target)
                 self.drop_animation_group.addAnimation(
                     animate(target.pos(), animation)
