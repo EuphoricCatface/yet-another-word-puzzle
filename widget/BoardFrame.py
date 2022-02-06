@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QFrame
 from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtCore import QMimeData, QByteArray
+from PySide6.QtCore import QMimeData, QByteArray, QTimer
 from widget import TileButton
 
 from backend import board
@@ -27,20 +27,30 @@ class BoardWidget(QFrame):
             for _ in range(5)
         ]
 
+        self.board.fill_prepare()
+        self.board.eliminate_empty()
         self.board_update()
 
     def board_update(self):
         # TODO: falling animation
-        self.board.fill_prepare()
-        self.board.eliminate_empty()
 
         for x, column in enumerate(self.button_columns):
             for y, e in enumerate(column):
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
                 e.setFixedSize(30, 30)
-                e.setText(chr(self.board.columns[x][y]))
+                e.set_ascii(self.board.columns[x][y])
                 e.x = x
                 e.y = y
+
+    def board_fill_prepare(self):
+        self.board.fill_prepare()
+        self.board_update()
+
+        QTimer.singleShot(200, self.board_eliminate_empty)
+
+    def board_eliminate_empty(self):
+        self.board.eliminate_empty()
+        self.board_update()
 
     def start_drag(self, x, y) -> None:
         if self.board.is_selecting:
@@ -104,4 +114,4 @@ class BoardWidget(QFrame):
         print("".join(word), flush=True)
 
         self.board.selection_eval()
-        self.board_update()
+        self.board_fill_prepare()

@@ -9,13 +9,30 @@ class TileButton(QPushButton):
 
         self.setCheckable(True)
         self.setAcceptDrops(True)
-        # self.character = char
+        self.character = ' '
 
         self.x = 0
         self.y = 0
 
         # TODO: Show score for letter
-        # TODO: Add setChar to handle other infos, score and bonus
+
+    def set_char(self, char: str):
+        # TODO: Handle other infos, score and bonus
+        self.character = char
+        self.setText(char)
+
+    def set_ascii(self, ascii_: int):
+        if ascii_ == 0:
+            char = ' '
+            self.setEnabled(False)
+            self.setChecked(True)
+            # self.setFlat(True)
+        else:
+            char = chr(ascii_)
+            self.setEnabled(True)
+            self.setChecked(False)
+            # self.setFlat(False)
+        self.set_char(char)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         print(e.pos())
