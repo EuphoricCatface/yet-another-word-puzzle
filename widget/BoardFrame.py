@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFrame
-from PySide6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
+from PySide6.QtCore import Qt
 from PySide6.QtCore import QMimeData, QByteArray
 from widget import TileButton
 

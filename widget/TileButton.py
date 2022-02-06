@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QPushButton
 
-from PySide6.QtGui import QDrag
-from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDragLeaveEvent, QDropEvent
+from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent
 
 
 class TileButton(QPushButton):
@@ -14,6 +13,9 @@ class TileButton(QPushButton):
 
         self.x = 0
         self.y = 0
+
+        # TODO: Show score for letter
+        # TODO: Add setChar to handle other infos, score and bonus
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         print(e.pos())
@@ -29,12 +31,6 @@ class TileButton(QPushButton):
         print("dragEnter: tile")
         self.parent().next_tile(self.x, self.y)
         event.accept()
-
-    # def dragLeaveEvent(self, event:QDragLeaveEvent) -> None:
-    #     self.setChecked(False)
-    #
-    #     print("dragLeave: tile")
-    #     super(TileButton, self).dragLeaveEvent(event)
 
     def dropEvent(self, event:QDropEvent) -> None:
         print("event drop: tile")
