@@ -55,10 +55,11 @@ class BoardWidget(QFrame):
                 # e.show()
 
     def drop_animation(self):
-        def animate(pos: QPoint, animation_: QPropertyAnimation):
+        def animate(pos: QPoint, dist: int, animation_: QPropertyAnimation):
+            dummy_fall_unit = 40
             current_pos = pos
             new_pos = QPoint(
-                current_pos.x(), current_pos.y() + distance * dummy_fall_unit,
+                current_pos.x(), current_pos.y() + dist * dummy_fall_unit,
             )
             animation_.setDuration(200)
             animation_.setStartValue(current_pos)
@@ -69,7 +70,6 @@ class BoardWidget(QFrame):
         self.drop_animation_group = QParallelAnimationGroup()
         # self.drop_animation_group.finished.connect(self.board_sync)
         animation_prepare = self.board.fall_distance
-        dummy_fall_unit = 40
 
         for x, column in enumerate(animation_prepare):
             remove_later = []
@@ -91,7 +91,7 @@ class BoardWidget(QFrame):
                     target.show()
                 animation = QPropertyAnimation(target, QByteArray('pos'), target)
                 self.drop_animation_group.addAnimation(
-                    animate(target.pos(), animation)
+                    animate(target.pos(), distance, animation)
                 )
 
             for i in remove_later:
