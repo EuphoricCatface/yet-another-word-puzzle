@@ -81,6 +81,7 @@ class Board:
         return self.current_chr_seq
 
     def next_select(self, x: int, y: int) -> (bool, list[str]):
+        # TODO: allow farther candidates, selecting ones inbetween
         self.deselect = None
         if x < 0 or \
                 y < 0 or \
