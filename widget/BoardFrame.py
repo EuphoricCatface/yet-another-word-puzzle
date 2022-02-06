@@ -81,7 +81,7 @@ class BoardWidget(QFrame):
 
                 target = self.button_columns[x][y]
                 if distance == -1:
-                    target.setText(' ')
+                    target.set_ascii(0)
                     target.close()
                     remove_later.append(target)
                     continue
