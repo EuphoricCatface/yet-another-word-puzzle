@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFrame
 from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtCore import QMimeData, QByteArray
 from widget import TileButton
 
@@ -11,6 +11,8 @@ TILE_ROWS = 5
 
 
 class BoardWidget(QFrame):
+    char_list_update = Signal(str)
+
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
 
@@ -86,6 +88,7 @@ class BoardWidget(QFrame):
         else:
             self.button_columns[x][y].setChecked(True)
 
+        self.char_list_update.emit("".join(char_list))
 
     def end_tile(self):
         word = self.board.end_select()
