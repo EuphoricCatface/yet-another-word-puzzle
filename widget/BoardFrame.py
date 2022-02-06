@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QFrame
 from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtCore import QMimeData, QByteArray, QTimer
+from PySide6.QtCore import QMimeData, QByteArray, QTimer, QPoint
+from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QEasingCurve
 from widget import TileButton
 
 from backend import board
@@ -31,6 +32,8 @@ class BoardWidget(QFrame):
         self.board.eliminate_empty()
         self.board_update()
 
+        self.animation_group = QParallelAnimationGroup()
+
     def board_update(self):
         # TODO: falling animation
 
@@ -41,12 +44,47 @@ class BoardWidget(QFrame):
                 e.set_ascii(self.board.columns[x][y])
                 e.x_board = x
                 e.y_board = y
+                e.show()
 
     def board_fill_prepare(self):
         self.board.fill_prepare()
-        self.board_update()
+        self.animation_group = QParallelAnimationGroup()
+        animation_prepare = self.board.fall_distance
+        dummy_fall_unit = 40
 
-        QTimer.singleShot(200, self.board_eliminate_empty)
+        for x, column in enumerate(animation_prepare):
+            remove_later = []
+            for y, distance in enumerate(column):
+                if y >= TILE_ROWS:
+                    continue
+                if distance == 0:
+                    continue
+
+                target = self.button_columns[x][y]
+                if distance == -1:
+                    target.setText(' ')
+                    target.close()
+                    self.button_columns[x].append(TileButton.TileButton(self))
+                    remove_later.append(target)
+                    continue
+
+                current_geo = target.pos()
+                new_geo = QPoint(
+                    current_geo.x(), current_geo.y() + distance * dummy_fall_unit,
+                )
+                animation = QPropertyAnimation(target, QByteArray('pos'), target)
+                animation.setDuration(200)
+                animation.setStartValue(current_geo)
+                animation.setEndValue(new_geo)
+                animation.setEasingCurve(QEasingCurve.InQuad)
+                self.animation_group.addAnimation(animation)
+            for i in remove_later:
+                self.button_columns[x].remove(i)
+
+        self.animation_group.start()
+        print("animation group started")
+        QTimer.singleShot(250, self.board_eliminate_empty)
+        print("non block")
 
     def board_eliminate_empty(self):
         self.board.eliminate_empty()
