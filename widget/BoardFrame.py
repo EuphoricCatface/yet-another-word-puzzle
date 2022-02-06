@@ -58,10 +58,10 @@ class BoardWidget(QFrame):
             new_pos = QPoint(
                 current_pos.x(), current_pos.y() + dist * dummy_fall_unit,
             )
-            animation_.setDuration(200)
+            animation_.setDuration(500)
             animation_.setStartValue(current_pos)
             animation_.setEndValue(new_pos)
-            animation_.setEasingCurve(QEasingCurve.InQuad)
+            animation_.setEasingCurve(QEasingCurve.OutCubic)
             return animation_
 
         # Update the actual board before the animation,
