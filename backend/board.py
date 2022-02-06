@@ -212,6 +212,8 @@ class Board:
         # NYI: search dictionary
         # print("DUMMY: word is always correct")
         seq_eval = self.current_chr_seq.copy()
+        while 'Q' in seq_eval:
+            seq_eval[seq_eval.index('Q')] = 'QU'
 
         rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
 

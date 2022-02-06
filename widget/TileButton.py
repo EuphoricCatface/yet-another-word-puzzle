@@ -33,11 +33,13 @@ class TileButton(QPushButton):
     def set_char(self, char: str):
         # TODO: Handle other infos, score and bonus
         self.character = char
-        self.setText(char)
         if char != ' ':
             self.letter_label.setText(
                 ' ' + str(LETTER_SCORE[ord(char) - ord('A')])
             )
+        if char == 'Q':
+            char = 'Qu'
+        self.setText(char)
 
     def set_ascii(self, ascii_: int):
         if ascii_ == 0:
