@@ -5,6 +5,15 @@ BOARD_HEIGHT = 5
 
 ALLOW_START_SELECTING_WITH_NEXT_SELECTION = False
 
+# Letter scores from official scrabble rule
+LETTER_SCORE = [
+    1, 3, 3, 2, 1,  # A - E
+    4, 2, 4, 1, 8,  # F - J
+    5, 1, 3, 1, 1,  # K - O
+    3, 10, 1, 8, 1,  # P - T
+    1, 4, 4, 8, 4, 10  # U - Z
+]
+
 
 class Board:
     def __init__(self):
@@ -25,7 +34,6 @@ class Board:
         self.random = random.Random(bytes.fromhex(self.seed))
 
         # TODO: add scoring
-        # TODO: add scores for letters
         # TODO: add double/triple letter/word bonus
 
     def pure_random(self):
