@@ -32,13 +32,15 @@ class BoardWidget(QFrame):
         self.drop_animation_group = QParallelAnimationGroup()
         self.to_be_collected: list[TileButton.TileButton] = []
 
-        self.game_init()
+        self.board.empty()
+        self.board_sync()
 
     @Slot()
     def game_init(self):
+        self.board.empty()
         self.board.fill_prepare()
         self.board_sync()
-        QTimer.singleShot(1000, self.drop_animation)
+        self.drop_animation()
 
     def board_sync(self):
         for x, column in enumerate(self.board.columns):
