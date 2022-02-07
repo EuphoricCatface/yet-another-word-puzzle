@@ -1,20 +1,19 @@
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtCore import QObject
 
-from widget import BoardFrame
+from widget.ui_MainWindow import Ui_MainWindow
 
 
 def main():
     app = QApplication()
 
-    main_widget = QWidget()
-    horizontal_layout = QHBoxLayout(main_widget)
-    horizontal_layout.addWidget(BoardFrame.BoardWidget(main_widget))
-    horizontal_layout.addWidget(BoardFrame.BoardWidget(main_widget))
+    main_window = QMainWindow()
+    main_window.ui = Ui_MainWindow()
+    main_window.ui.setupUi(main_window)
 
-    main_widget.setWindowTitle(QObject.tr("Puzzle Test"))
-    main_widget.show()
+    main_window.setWindowTitle(QObject.tr("Puzzle Test"))
+    main_window.show()
 
     return app.exec()
 
