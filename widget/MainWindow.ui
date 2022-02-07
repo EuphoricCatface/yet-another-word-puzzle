@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="TopFrame" name="frame">
+     <widget class="TopFrame" name="frame_Top">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -44,7 +44,7 @@
      </widget>
     </item>
     <item>
-     <widget class="BoardWidget" name="frame_2">
+     <widget class="BoardWidget" name="frame_Board">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
