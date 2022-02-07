@@ -50,11 +50,13 @@ class Board:
             for i in LETTER_SCORE:
                 Board.complementary_weighted_random.reverse_score.append(sum_ - i)
             Board.complementary_weighted_random.sum = sum(Board.complementary_weighted_random.reverse_score)
-        rand = self.random.randint(0, Board.complementary_weighted_random.sum)
+            print(Board.complementary_weighted_random.reverse_score)
+        rand = self.random.randint(0, Board.complementary_weighted_random.sum - 1)
         for nth, score in enumerate(Board.complementary_weighted_random.reverse_score):
             rand -= score
             if rand < 0:
                 return nth + ord('A')
+        raise AssertionError
 
     def inverse_weighted_random(self):
         if "inverse_score" not in Board.inverse_weighted_random.__dict__:
@@ -64,11 +66,13 @@ class Board:
             for i in LETTER_SCORE:
                 Board.inverse_weighted_random.inverse_score.append(lcm_ / i)
             Board.inverse_weighted_random.sum = sum(Board.inverse_weighted_random.inverse_score)
-        rand = self.random.randint(0, Board.inverse_weighted_random.sum)
+            print(Board.inverse_weighted_random.inverse_score)
+        rand = self.random.randint(0, Board.inverse_weighted_random.sum - 1)
         for nth, score in enumerate(Board.inverse_weighted_random.inverse_score):
             rand -= score
             if rand < 0:
                 return nth + ord('A')
+        raise AssertionError
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
@@ -80,7 +84,6 @@ class Board:
             to_add = column.count(0)
             for _ in range(to_add):
                 rand = self.inverse_weighted_random()
-                assert rand is not None
                 column.append(rand)
 
             self.fall_distance[i] = []
