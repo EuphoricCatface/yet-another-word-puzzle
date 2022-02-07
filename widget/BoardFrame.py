@@ -13,6 +13,7 @@ TILE_ROWS = 5
 
 class BoardWidget(QFrame):
     char_list_update = Signal(str)
+    score_add = Signal(int)
 
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
@@ -169,6 +170,7 @@ class BoardWidget(QFrame):
         score = self.board.selection_eval()
         if score > 0:
             print(f"{score=}")
+            self.score_add.emit(score)
             self.board.fill_prepare()
             self.board_sync()
             self.drop_animation()
