@@ -20,6 +20,8 @@ LETTER_SCORE = [
 
 class Board:
     def __init__(self):
+        self.letter_random = self.inverse_weighted_random
+
         # Columns don't interact between each other. Let's treat each column as a list
         # The first column is on the left, and the first element is at the bottom
         self.columns: list[list[int]] = []
@@ -83,7 +85,7 @@ class Board:
         for i, column in enumerate(self.columns):
             to_add = column.count(0)
             for _ in range(to_add):
-                rand = self.inverse_weighted_random()
+                rand = self.letter_random()
                 column.append(rand)
 
             self.fall_distance[i] = []
