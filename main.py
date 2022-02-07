@@ -15,6 +15,9 @@ def main():
     main_window.setWindowTitle(QObject.tr("Puzzle Test"))
     main_window.show()
 
+    main_window.ui.frame_Top.ui.pushButton_start.clicked.connect(main_window.ui.frame_Board.game_init)
+    main_window.ui.frame_Board.score_add.connect(main_window.ui.frame_Top.add_score)
+
     return app.exec()
 
 
