@@ -16,7 +16,7 @@ class TileButton(QPushButton):
         self.y_board = 0
 
         # TODO: Show score for letter
-        self.letter_label = QLabel(self)
+        self.score_label = QLabel(self)
 
     def resizeEvent(self, event:QResizeEvent) -> None:
         self.letter_label_resize()
@@ -24,19 +24,22 @@ class TileButton(QPushButton):
 
     def letter_label_resize(self):
         sz = self.size()
-        self.letter_label.setGeometry(
+        self.score_label.setGeometry(
             0, 0,
             int(sz.width() / 2), int(sz.height() / 2)
         )
-        self.letter_label.setStyleSheet("font-size: 8px; text-align: center;")
+        self.score_label.setStyleSheet("font-size: 8px; text-align: center;")
 
     def set_char(self, char: str):
         # TODO: Handle other infos, score and bonus
         self.character = char
-        if char != ' ':
-            self.letter_label.setText(
+        if char == ' ':
+            self.score_label.setText(' ')
+        else:
+            self.score_label.setText(
                 ' ' + str(LETTER_SCORE[ord(char) - ord('A')])
             )
+
         if char == 'Q':
             char = 'Qu'
         self.setText(char)
