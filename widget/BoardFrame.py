@@ -29,10 +29,10 @@ class BoardWidget(QFrame):
             for _ in range(5)
         ]
 
-        self.game_init()
-
         self.drop_animation_group = QParallelAnimationGroup()
         self.to_be_collected: list[TileButton.TileButton] = []
+
+        self.game_init()
 
     @Slot()
     def game_init(self):
