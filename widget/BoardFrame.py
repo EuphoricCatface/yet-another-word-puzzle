@@ -172,7 +172,7 @@ class BoardWidget(QFrame):
         for coord in self.board.current_coord_seq:
             x, y = coord
             self.button_columns[x][y].setChecked(False)
-        print("".join(word), flush=True)
+        print(self.board.get_current_word(), flush=True)
         self.char_list_deactivate.emit()
 
         score = self.board.eval_after_select()
