@@ -172,7 +172,7 @@ class BoardWidget(QFrame):
         print("".join(word), flush=True)
         self.char_list_deactivate.emit()
 
-        score = self.board.end_turn()
+        score = self.board.eval_after_select()
         if score > 0:
             print(f"word {score=}")
             self.score_add.emit(score)

@@ -203,43 +203,49 @@ class Board:
         repr_clean = repr_dirty.replace('\\x00', ' ')
         return repr_clean
 
-    def selection_clear(self):
+    def eval_after_select(self):
         assert self.is_selecting is False
-
-        self.current_chr_seq.clear()
-        self.current_coord_seq.clear()
-
-    def remove_selected_tiles(self):
-        assert self.is_selecting is False
-
-        for coord in self.current_coord_seq:
-            self.columns[coord[0]][coord[1]] = 0
-
-    def selection_eval(self):
-        # NYI: search dictionary
-        # print("DUMMY: word is always correct")
-        seq_eval = self.current_chr_seq.copy()
-        while 'Q' in seq_eval:
-            seq_eval[seq_eval.index('Q')] = 'QU'
+        assert self.current_chr_seq
+        assert self.current_coord_seq
 
         score = self.eval_score()
 
-        # Rejection rules
-        if (not word_evaluation.Evaluation.eval("".join(seq_eval))) \
-                or len(seq_eval) < 3:
-            # Evaluation can reject shorter words by not loading them, but Qu can mess this up
-            self.selection_clear()
-            return -score
+        if self.eval_word():
+            # remove_selection_seq_from_board
+            for i, coord in enumerate(self.current_coord_seq):
+                assert self.columns[coord[0]][coord[1]] == ord(self.current_chr_seq[i])
+                self.columns[coord[0]][coord[1]] = 0
+        else:
+            score = -score
 
-        self.remove_selected_tiles()
-        self.selection_clear()
+        # selection_seq_clear
+        self.current_chr_seq.clear()
+        self.current_coord_seq.clear()
         return score
 
     def eval_score(self):
+        assert self.current_chr_seq
+        assert self.current_coord_seq
+
         score = 0
         for i in self.current_chr_seq:
             score += LETTER_SCORE[ord(i) - ord('A')]
         return score
+
+    def eval_word(self):
+        # Evaluation can reject shorter words by not loading them, but Qu can mess this up
+        if len(self.current_chr_seq) < 3:
+            return False
+
+        return word_evaluation.Evaluation.eval(
+            self.get_current_word()
+        )
+
+    def get_current_word(self):
+        seq_eval = self.current_chr_seq.copy()
+        while 'Q' in seq_eval:
+            seq_eval[seq_eval.index('Q')] = 'QU'
+        return "".join(seq_eval)
 
     # TODO: Add undo / redo
     #  Restore random state on undo
@@ -272,10 +278,10 @@ def test_main():
                         eval_result = word_evaluation.Evaluation.eval(word)
                         print(eval_result)
                         if not eval_result:
-                            board.selection_clear()
+                            board.selection_seq_clear()
                             continue
-                        board.remove_selected_tiles()
-                        board.selection_clear()
+                        board.remove_selection_seq_from_board()
+                        board.selection_seq_clear()
                         break
 
     except KeyboardInterrupt:
