@@ -10,14 +10,23 @@ class TopFrame(QFrame):
         self.ui.setupUi(self)
 
         self.score = 0
-        self.ui.label_score.setText(str(self.score))
 
-        self.word_init()
+        self.init_game()
+
+    @Slot()
+    def init_game(self):
+        self.init_score()
+        self.init_word()
 
     @Slot(int)
     def add_score(self, score: int):
         self.score += score
         self.ui.label_score.setText(str(self.score))
+
+    @Slot()
+    def init_score(self):
+        self.score = 0
+        self.add_score(0)
 
     @Slot(str, int)
     def word_display(self, word, score):
@@ -33,7 +42,7 @@ class TopFrame(QFrame):
         self.ui.label_wordscore.setText(str(score))
 
     @Slot()
-    def word_init(self):
+    def init_word(self):
         self.ui.label_word.setText("")
         self.ui.label_wordscore.setText("0")
         self.word_activate(False)
