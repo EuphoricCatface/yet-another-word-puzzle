@@ -218,22 +218,27 @@ class Board:
     def selection_eval(self):
         # NYI: search dictionary
         # print("DUMMY: word is always correct")
-        score = -1
         seq_eval = self.current_chr_seq.copy()
         while 'Q' in seq_eval:
             seq_eval[seq_eval.index('Q')] = 'QU'
 
-        if len(seq_eval) < 3:  # Rejection rules
-            rtn = False
-        else:
-            rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
+        score = self.eval_score()
 
-        if rtn:
-            score = 0
-            for i in self.current_chr_seq:
-                score += LETTER_SCORE[ord(i) - ord('A')]
-            self.remove_selected_tiles()
+        # Rejection rules
+        if (not word_evaluation.Evaluation.eval("".join(seq_eval))) \
+                or len(seq_eval) < 3:
+            # Evaluation can reject shorter words by not loading them, but Qu can mess this up
+            self.selection_clear()
+            return -score
+
+        self.remove_selected_tiles()
         self.selection_clear()
+        return score
+
+    def eval_score(self):
+        score = 0
+        for i in self.current_chr_seq:
+            score += LETTER_SCORE[ord(i) - ord('A')]
         return score
 
     # TODO: Add undo / redo
