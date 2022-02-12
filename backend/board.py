@@ -20,8 +20,6 @@ LETTER_SCORE = [
 
 class Board:
     def __init__(self):
-        self.letter_random = self.inverse_weighted_random
-
         # Columns don't interact between each other. Let's treat each column as a list
         # The first column is on the left, and the first element is at the bottom
         self.columns: list[list[int]] = []
@@ -35,46 +33,51 @@ class Board:
         self.deselect: [tuple[int, int] | None] = None
 
         # TODO: add seeded random
-        self.seed = random.SystemRandom().randbytes(16).hex()
-        self.random = random.Random(bytes.fromhex(self.seed))
+        self.random_ = Board.Random(random.SystemRandom().randbytes(16).hex())
+        self.letter_random = self.random_.inverse_weighted_random
 
         # TODO: add scoring
         # TODO: add double/triple letter/word bonus
 
-    def pure_random(self):
-        return self.random.randint(ord('A'), ord('Z'))
+    class Random:
+        def __init__(self, seed):
+            self.seed = seed
+            self.random = random.Random(bytes.fromhex(self.seed))
 
-    def complementary_weighted_random(self):
-        if "reverse_score" not in Board.complementary_weighted_random.__dict__:
-            print("random_init")
-            Board.complementary_weighted_random.reverse_score = []
-            sum_ = max(LETTER_SCORE) + 1
-            for i in LETTER_SCORE:
-                Board.complementary_weighted_random.reverse_score.append(sum_ - i)
-            Board.complementary_weighted_random.sum = sum(Board.complementary_weighted_random.reverse_score)
-            print(Board.complementary_weighted_random.reverse_score)
-        rand = self.random.randint(0, Board.complementary_weighted_random.sum - 1)
-        for nth, score in enumerate(Board.complementary_weighted_random.reverse_score):
-            rand -= score
-            if rand < 0:
-                return nth + ord('A')
-        raise AssertionError
+        def pure_random(self):
+            return self.random.randint(ord('A'), ord('Z'))
 
-    def inverse_weighted_random(self):
-        if "inverse_score" not in Board.inverse_weighted_random.__dict__:
-            print("random_init")
-            Board.inverse_weighted_random.inverse_score = []
-            lcm_ = lcm(*LETTER_SCORE)
-            for i in LETTER_SCORE:
-                Board.inverse_weighted_random.inverse_score.append(lcm_ / i)
-            Board.inverse_weighted_random.sum = sum(Board.inverse_weighted_random.inverse_score)
-            print(Board.inverse_weighted_random.inverse_score)
-        rand = self.random.randint(0, Board.inverse_weighted_random.sum - 1)
-        for nth, score in enumerate(Board.inverse_weighted_random.inverse_score):
-            rand -= score
-            if rand < 0:
-                return nth + ord('A')
-        raise AssertionError
+        def complementary_weighted_random(self):
+            if "reverse_score" not in Board.Random.complementary_weighted_random.__dict__:
+                print("random_init")
+                Board.Random.complementary_weighted_random.reverse_score = []
+                sum_ = max(LETTER_SCORE) + 1
+                for i in LETTER_SCORE:
+                    Board.Random.complementary_weighted_random.reverse_score.append(sum_ - i)
+                Board.Random.complementary_weighted_random.sum = sum(Board.Random.complementary_weighted_random.reverse_score)
+                print(Board.Random.complementary_weighted_random.reverse_score)
+            rand = self.random.randint(0, Board.Random.complementary_weighted_random.sum - 1)
+            for nth, score in enumerate(Board.Random.complementary_weighted_random.reverse_score):
+                rand -= score
+                if rand < 0:
+                    return nth + ord('A')
+            raise AssertionError
+
+        def inverse_weighted_random(self):
+            if "inverse_score" not in Board.Random.inverse_weighted_random.__dict__:
+                print("random_init")
+                Board.Random.inverse_weighted_random.inverse_score = []
+                lcm_ = lcm(*LETTER_SCORE)
+                for i in LETTER_SCORE:
+                    Board.Random.inverse_weighted_random.inverse_score.append(lcm_ / i)
+                Board.Random.inverse_weighted_random.sum = sum(Board.Random.inverse_weighted_random.inverse_score)
+                print(Board.Random.inverse_weighted_random.inverse_score)
+            rand = self.random.randint(0, Board.Random.inverse_weighted_random.sum - 1)
+            for nth, score in enumerate(Board.Random.inverse_weighted_random.inverse_score):
+                rand -= score
+                if rand < 0:
+                    return nth + ord('A')
+            raise AssertionError
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
