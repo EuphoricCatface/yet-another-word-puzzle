@@ -16,6 +16,13 @@ LETTER_SCORE = [
     3, 10, 1, 1, 1,  # P - T
     1, 4, 4, 8, 4, 10  # U - Z
 ]
+THE_LETTER_FREQ = [
+    9, 2, 2, 4, 12,  # A - E
+    2, 3, 2, 9, 1,  # F - J
+    1, 4, 2, 6, 8,  # K - O
+    2, 1, 6, 4, 6,  # P - T
+    4, 2, 2, 1, 2, 1  # U - Z
+]
 
 
 class Board:
@@ -34,7 +41,7 @@ class Board:
 
         # TODO: add seeded random
         self.random_ = Board.Random(random.SystemRandom().randbytes(16).hex())
-        self.letter_random = self.random_.inverse_weighted_random
+        self.letter_random = self.random_.the_freq_random
 
         # TODO: add scoring
         # TODO: add double/triple letter/word bonus
@@ -74,6 +81,17 @@ class Board:
                 print(Board.Random.inverse_weighted_random.inverse_score)
             rand = self.random.randint(0, Board.Random.inverse_weighted_random.sum - 1)
             for nth, score in enumerate(Board.Random.inverse_weighted_random.inverse_score):
+                rand -= score
+                if rand < 0:
+                    return nth + ord('A')
+            raise AssertionError
+
+        def the_freq_random(self):
+            if "sum" not in Board.Random.the_freq_random.__dict__:
+                print("random_init")
+                Board.Random.the_freq_random.sum = sum(THE_LETTER_FREQ)
+            rand = self.random.randint(0, Board.Random.the_freq_random.sum - 1)
+            for nth, score in enumerate(THE_LETTER_FREQ):
                 rand -= score
                 if rand < 0:
                     return nth + ord('A')
