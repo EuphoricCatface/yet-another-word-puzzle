@@ -12,7 +12,15 @@ class TopFrame(QFrame):
         self.score = 0
         self.ui.label_score.setText(str(self.score))
 
+        self.ui.label_word.setText("")
+        self.ui.label_wordscore.setText("0")
+
     @Slot(int)
     def add_score(self, score: int):
         self.score += score
         self.ui.label_score.setText(str(self.score))
+
+    @Slot(str, int)
+    def word_display(self, word, score):
+        self.ui.label_word.setText(word)
+        self.ui.label_wordscore.setText(str(score))

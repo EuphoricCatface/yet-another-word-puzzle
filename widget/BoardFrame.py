@@ -12,7 +12,7 @@ TILE_ROWS = 5
 
 
 class BoardWidget(QFrame):
-    char_list_update = Signal(str, str)
+    char_list_update = Signal(str, int)
     score_add = Signal(int)
 
     def __init__(self, parent):
@@ -161,7 +161,7 @@ class BoardWidget(QFrame):
             self.button_columns[x][y].setChecked(True)
 
         score = self.board.eval_score()
-        self.char_list_update.emit("".join(char_list), f"{score}")
+        self.char_list_update.emit("".join(char_list), score)
 
     def end_tile(self):
         word = self.board.end_select()
