@@ -1,9 +1,13 @@
 from PySide6.QtWidgets import QFrame
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, Signal
 from widget.ui_TopFrame import Ui_Frame
+
+import time
 
 
 class TopFrame(QFrame):
+    game_over = Signal()
+
     def __init__(self, parent):
         super(TopFrame, self).__init__(parent)
         self.ui = Ui_Frame()
@@ -11,6 +15,9 @@ class TopFrame(QFrame):
 
         self.score = 0
         self.ui.pushButton_start.clicked.connect(self.init_game)
+
+        self.game_start_time = 0
+        self.game_turn = 0
 
         self.init_game()
 
@@ -31,11 +38,15 @@ class TopFrame(QFrame):
     def init_game(self):
         self.init_score()
         self.init_word()
+        self.game_start_time = time.monotonic()
+        self.game_turn = 0
 
     @Slot(int)
     def add_score(self, score: int):
         self.score += score
         self.ui.label_score.setText(str(self.score))
+        # counting a turn only when it's a valid word
+        self.game_turn += 1
 
     @Slot()
     def init_score(self):
