@@ -223,7 +223,10 @@ class Board:
         while 'Q' in seq_eval:
             seq_eval[seq_eval.index('Q')] = 'QU'
 
-        rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
+        if len(seq_eval) < 3:  # Rejection rules
+            rtn = False
+        else:
+            rtn = word_evaluation.Evaluation.eval("".join(seq_eval))
 
         if rtn:
             score = 0
