@@ -41,7 +41,7 @@ class Board:
 
         # TODO: add seeded random
         self.random_ = Board.Random(random.SystemRandom().randbytes(16).hex())
-        self.letter_random = self.random_.the_freq_random
+        self.letter_random = self.random_.get_random
 
         # TODO: add scoring
         # TODO: add double/triple letter/word bonus
@@ -51,51 +51,43 @@ class Board:
             self.seed = seed
             self.random = random.Random(bytes.fromhex(self.seed))
 
-        def pure_random(self):
-            return self.random.randint(ord('A'), ord('Z'))
+            self.random_table = self.get_inverse_weighted_table()
+            self.random_table_sum = sum(self.random_table)
 
-        def complementary_weighted_random(self):
-            if "reverse_score" not in Board.Random.complementary_weighted_random.__dict__:
-                print("random_init")
-                Board.Random.complementary_weighted_random.reverse_score = []
-                sum_ = max(LETTER_SCORE) + 1
-                for i in LETTER_SCORE:
-                    Board.Random.complementary_weighted_random.reverse_score.append(sum_ - i)
-                Board.Random.complementary_weighted_random.sum = sum(Board.Random.complementary_weighted_random.reverse_score)
-                print(Board.Random.complementary_weighted_random.reverse_score)
-            rand = self.random.randint(0, Board.Random.complementary_weighted_random.sum - 1)
-            for nth, score in enumerate(Board.Random.complementary_weighted_random.reverse_score):
+        @staticmethod
+        def get_pure_random_table():
+            return [1 for _ in range(26)]
+
+        @staticmethod
+        def get_complementary_weighted_table():
+            print("comp_random_init")
+            table = []
+            sum_ = max(LETTER_SCORE) + 1
+            for i in LETTER_SCORE:
+                table.append(sum_ - i)
+            return table
+
+        @staticmethod
+        def get_inverse_weighted_table():
+            print("inv_random_init")
+            table = []
+            lcm_ = lcm(*LETTER_SCORE)
+            for i in LETTER_SCORE:
+                assert lcm_ % i == 0
+                table.append(lcm_ // i)
+            return table
+
+        @staticmethod
+        def the_freq_table():
+            return THE_LETTER_FREQ
+
+        def get_random(self):
+            rand = self.random.randint(0, self.random_table_sum - 1)
+            for nth, score in enumerate(self.random_table):
                 rand -= score
                 if rand < 0:
                     return nth + ord('A')
-            raise AssertionError
-
-        def inverse_weighted_random(self):
-            if "inverse_score" not in Board.Random.inverse_weighted_random.__dict__:
-                print("random_init")
-                Board.Random.inverse_weighted_random.inverse_score = []
-                lcm_ = lcm(*LETTER_SCORE)
-                for i in LETTER_SCORE:
-                    Board.Random.inverse_weighted_random.inverse_score.append(lcm_ / i)
-                Board.Random.inverse_weighted_random.sum = sum(Board.Random.inverse_weighted_random.inverse_score)
-                print(Board.Random.inverse_weighted_random.inverse_score)
-            rand = self.random.randint(0, Board.Random.inverse_weighted_random.sum - 1)
-            for nth, score in enumerate(Board.Random.inverse_weighted_random.inverse_score):
-                rand -= score
-                if rand < 0:
-                    return nth + ord('A')
-            raise AssertionError
-
-        def the_freq_random(self):
-            if "sum" not in Board.Random.the_freq_random.__dict__:
-                print("random_init")
-                Board.Random.the_freq_random.sum = sum(THE_LETTER_FREQ)
-            rand = self.random.randint(0, Board.Random.the_freq_random.sum - 1)
-            for nth, score in enumerate(THE_LETTER_FREQ):
-                rand -= score
-                if rand < 0:
-                    return nth + ord('A')
-            raise AssertionError
+            raise AssertionError("board random tried to return None")
 
     def empty(self):
         self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
