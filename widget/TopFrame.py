@@ -21,8 +21,11 @@ class TopFrame(QFrame):
         #  Score adds to the timer
 
         # TODO: Make game mechanic rules
-        #  More high value tiles (complementary random)
-        #  See before you go (penalty on retreat)
+        #  High risk high return (complementary random)
+        #  Look before you leap (penalty on retreat)
+        #  Leap of faith (Don't show if the word is valid)
+        #  Allow undo
+        #  Seeded random
 
     @Slot()
     def init_game(self):
