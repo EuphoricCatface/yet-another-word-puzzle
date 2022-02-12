@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtCore import QObject
 
 from widget.ui_MainWindow import Ui_MainWindow
