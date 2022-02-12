@@ -13,6 +13,7 @@ TILE_ROWS = 5
 
 class BoardWidget(QFrame):
     char_list_update = Signal(str, int)
+    char_list_deactivate = Signal()
     score_add = Signal(int)
 
     def __init__(self, parent):
@@ -169,8 +170,9 @@ class BoardWidget(QFrame):
             x, y = coord
             self.button_columns[x][y].setChecked(False)
         print("".join(word), flush=True)
+        self.char_list_deactivate.emit()
 
-        score = self.board.selection_eval()
+        score = self.board.end_turn()
         if score > 0:
             print(f"word {score=}")
             self.score_add.emit(score)
