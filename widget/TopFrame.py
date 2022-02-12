@@ -14,6 +14,16 @@ class TopFrame(QFrame):
 
         self.init_game()
 
+        # TODO: Make game over rules
+        #  Turns until score X
+        #  Until X turns
+        #  Until X seconds
+        #  Score adds to the timer
+
+        # TODO: Make game mechanic rules
+        #  More high value tiles (complementary random)
+        #  See before you go (penalty on retreat)
+
     @Slot()
     def init_game(self):
         self.init_score()
