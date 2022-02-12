@@ -10,6 +10,7 @@ class TopFrame(QFrame):
         self.ui.setupUi(self)
 
         self.score = 0
+        self.ui.pushButton_start.clicked.connect(self.init_game)
 
         self.init_game()
 
