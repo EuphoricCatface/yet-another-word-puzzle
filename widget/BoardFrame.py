@@ -162,7 +162,10 @@ class BoardWidget(QFrame):
             self.button_columns[x][y].setChecked(True)
 
         score = self.board.eval_score()
-        self.char_list_update.emit("".join(char_list), score)
+        word = self.board.get_current_word()
+        if not self.board.eval_word():
+            score = -score
+        self.char_list_update.emit(word, score)
 
     def end_tile(self):
         word = self.board.end_select()

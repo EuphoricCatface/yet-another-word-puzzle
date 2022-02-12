@@ -23,6 +23,12 @@ class TopFrame(QFrame):
     def word_display(self, word, score):
         self.word_activate(True)
 
+        if score < 0:
+            self.ui.label_word.setStyleSheet("")
+            score = -score
+        else:
+            self.ui.label_word.setStyleSheet("font: bold")
+
         self.ui.label_word.setText(word)
         self.ui.label_wordscore.setText(str(score))
 
