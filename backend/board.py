@@ -71,6 +71,7 @@ class Board:
             self.random = random.Random(bytes.fromhex(self.seed))
 
             self.random_table = self.get_inverse_weighted_table()
+            print(self.random_table)
             self.random_table_sum = sum(self.random_table)
 
         @staticmethod
