@@ -17,7 +17,7 @@ class TopFrame(QFrame):
         self.ui.pushButton_start.clicked.connect(self.init_game)
 
         self.game_start_time = 0
-        self.game_turn = 0
+        self.game_found_words = 0
 
         self.init_game()
 
@@ -39,14 +39,14 @@ class TopFrame(QFrame):
         self.init_score()
         self.init_word()
         self.game_start_time = time.monotonic()
-        self.game_turn = 0
+        self.game_found_words = 0
 
     @Slot(int)
     def add_score(self, score: int):
         self.score += score
         self.ui.label_score.setText(str(self.score))
         # counting a turn only when it's a valid word
-        self.game_turn += 1
+        self.game_found_words += 1
 
     @Slot()
     def init_score(self):
