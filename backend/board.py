@@ -51,19 +51,32 @@ class Board:
         # The first column is on the left, and the first element is at the bottom
         self.columns: Board.COLUMNS_TYPE = []
         self.fall_distance: list[list[int]] = []
-        self.empty()
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
 
         self.current_tile_seq: list[Tile] = []
         self.current_coord_seq: list[tuple[int, int]] = []
         self.is_selecting: bool = False
         self.deselect: [tuple[int, int] | None] = None
-
-        # TODO: add seeded random
-        self.random_ = Board.Random(random.SystemRandom().randbytes(16).hex())
+        self.random = None
 
         # TODO: add scoring
         # TODO: add double/triple letter/word bonus
+
+    def game_setup(self):
+        # TODO: add seeded random
+        self.random = Board.Random(random.SystemRandom().randbytes(16).hex())
+        self.empty()
+        self.selection_seq_clear()
+        self.is_selecting = False
+
+    def empty(self):
+        self.columns = [[Tile(0) for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
+        self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
+        self.deselect = None
+
+    def selection_seq_clear(self):
+        self.current_tile_seq.clear()
+        self.current_coord_seq.clear()
 
     class Random:
         def __init__(self, seed):
@@ -124,16 +137,11 @@ class Board:
                         bonus = "TW"
             return Tile(chr_ord, bonus)
 
-    def empty(self):
-        self.columns = [[Tile(0) for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
-        self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
-        self.deselect = None
-
     def fill_prepare(self):
         for i, column in enumerate(self.columns):
             to_add = column.count(Tile(0))
             for _ in range(to_add):
-                rand = self.random_.get_random_tile()
+                rand = self.random.get_random_tile()
                 column.append(rand)
 
             self.fall_distance[i] = []
@@ -255,9 +263,7 @@ class Board:
         else:
             score = -score
 
-        # selection_seq_clear
-        self.current_tile_seq.clear()
-        self.current_coord_seq.clear()
+        self.selection_seq_clear()
         return score
 
     def eval_score(self):
