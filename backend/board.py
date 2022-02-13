@@ -279,10 +279,10 @@ class Board:
         )
 
     def get_current_word(self):
-        seq_eval = self.current_chr_seq.copy()
-        while 'Q' in seq_eval:
-            seq_eval[seq_eval.index('Q')] = 'QU'
-        return "".join(seq_eval)
+        chr_list = self.current_chr_seq.copy()
+        while 'Q' in chr_list:
+            chr_list[chr_list.index('Q')] = 'QU'
+        return "".join(chr_list)
 
     # TODO: Add undo / redo
     #  Restore random state on undo
