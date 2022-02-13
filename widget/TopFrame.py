@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QFrame
-from PySide6.QtCore import Slot, Signal
+from PySide6.QtCore import Slot, Signal, QTimer
 from widget.ui_TopFrame import Ui_Frame
 
 import time
@@ -20,6 +20,13 @@ class TopFrame(QFrame):
         self.game_found_words = 0
 
         self.init_game()
+
+        self.game_timer = QTimer()
+        self.game_timer.setInterval(100)
+        self.game_timer.timeout.connect(self.game_over_check)
+
+        self.ui.pushButton_start.clicked.connect(self.game_timer.start)
+        self.game_over.connect(self.game_timer.stop)
 
         # TODO: Make game over rules
         #  Turns until score X
@@ -80,3 +87,12 @@ class TopFrame(QFrame):
     @Slot()
     def word_deactivate(self):
         self.word_activate(False)
+
+    @Slot()
+    def game_over_check(self):
+        criteria = self.game_start_time
+        remaining_rule = criteria + 90 - time.monotonic()
+
+        self.ui.label_countdown.setText(str(int(remaining_rule)))
+        if remaining_rule <= 0:
+            self.game_over.emit()
