@@ -45,13 +45,13 @@ class BoardWidget(QFrame):
 
     def board_sync(self):
         for x, column in enumerate(self.board.columns):
-            for y, ascii_ in enumerate(column):
+            for y, tile in enumerate(column):
                 if len(self.button_columns[x]) == y:
                     self.button_columns[x].append(TileButton.TileButton(self))
                 e = self.button_columns[x][y]
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
                 e.setFixedSize(30, 30)
-                e.set_ascii(ascii_)
+                e.set_ascii(tile.letter_ord)
                 e.x_board = x
                 e.y_board = y
 

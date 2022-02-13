@@ -25,11 +25,28 @@ THE_LETTER_FREQ = [
 ]
 
 
+class Tile:
+    # Simple class to handle {double,triple} {letter,word} bonuses
+    def __init__(self, letter_ord, bonus: None | str = None):
+        # A tile cannot have bonus while being an empty one
+        assert not (letter_ord == 0 and bonus is not None)
+
+        self.letter_ord = letter_ord
+        self.bonus = bonus
+
+    def __eq__(self, other):
+        if not isinstance(other, Tile):
+            return False
+        return self.letter_ord == other.letter_ord and self.bonus == other.bonus
+
+
 class Board:
+    COLUMNS_TYPE = list[list[Tile]]
+
     def __init__(self):
         # Columns don't interact between each other. Let's treat each column as a list
         # The first column is on the left, and the first element is at the bottom
-        self.columns: list[list[int]] = []
+        self.columns: Board.COLUMNS_TYPE = []
         self.fall_distance: list[list[int]] = []
         self.empty()
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
@@ -41,7 +58,6 @@ class Board:
 
         # TODO: add seeded random
         self.random_ = Board.Random(random.SystemRandom().randbytes(16).hex())
-        self.letter_random = self.random_.get_random
 
         # TODO: add scoring
         # TODO: add double/triple letter/word bonus
@@ -81,7 +97,7 @@ class Board:
         def the_freq_table():
             return THE_LETTER_FREQ
 
-        def get_random(self):
+        def get_random_ascii(self):
             rand = self.random.randint(0, self.random_table_sum - 1)
             for nth, score in enumerate(self.random_table):
                 rand -= score
@@ -90,21 +106,21 @@ class Board:
             raise AssertionError("board random tried to return None")
 
     def empty(self):
-        self.columns = [[0 for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
+        self.columns = [[Tile(0) for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
         self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
         self.deselect = None
 
     def fill_prepare(self):
         for i, column in enumerate(self.columns):
-            to_add = column.count(0)
+            to_add = column.count(Tile(0))
             for _ in range(to_add):
-                rand = self.letter_random()
+                rand = Tile(self.random_.get_random_ascii())
                 column.append(rand)
 
             self.fall_distance[i] = []
             temp_fall_distance = 0
             for e in column:
-                if e == 0:
+                if e == Tile(0):
                     temp_fall_distance += 1
                     self.fall_distance[i].append(-1)
                     continue
@@ -112,9 +128,9 @@ class Board:
 
     def eliminate_empty(self):
         for column in self.columns:
-            to_eliminate = column.count(0)
+            to_eliminate = column.count(Tile(0))
             for _ in range(to_eliminate):
-                column.remove(0)
+                column.remove(Tile(0))
 
     def start_select(self, x: int, y: int) -> list[str]:
         if x < 0 or \
@@ -125,7 +141,7 @@ class Board:
         assert not (self.current_chr_seq or self.current_coord_seq)
         assert self.is_selecting is False
 
-        self.current_chr_seq.append(chr(self.columns[x][y]))
+        self.current_chr_seq.append(chr(self.columns[x][y].letter_ord))
         self.current_coord_seq.append((x, y))
         self.is_selecting = True
         return self.current_chr_seq
@@ -169,7 +185,7 @@ class Board:
             # this is not a neighbor of the current head
             return False, self.current_chr_seq
 
-        self.current_chr_seq.append(chr(self.columns[x][y]))
+        self.current_chr_seq.append(chr(self.columns[x][y].letter_ord))
         self.current_coord_seq.append((x, y))
         return True, self.current_chr_seq
 
@@ -182,21 +198,18 @@ class Board:
         return self.current_chr_seq
 
     @staticmethod
-    def get_board_rot(columns):
-        board_rot = [  # inverse of the board here
-            [columns[x][y] for x in range(BOARD_WIDTH)]
-            for y in range(BOARD_HEIGHT)
-        ]
-        board_rot.reverse()
-        return board_rot
-
-    @staticmethod
-    def get_board_repr(columns: list[list[int]], sequence: list[tuple[int, int]]):
-        upper_to_lower = ord('a') - ord('A')
+    def get_board_repr(columns: COLUMNS_TYPE, sequence: list[tuple[int, int]]):
+        def get_board_rot_ord(columns_: Board.COLUMNS_TYPE) -> list[list[int]]:
+            board_rot = [  # inverse of the board here
+                [columns_[x][y].letter_ord for x in range(BOARD_WIDTH)]
+                for y in range(BOARD_HEIGHT)
+            ]
+            board_rot.reverse()
+            return board_rot
         columns_copy = [column.copy() for column in columns]
-        for coord in sequence:
-            columns_copy[coord[0]][coord[1]] += upper_to_lower
-        rot_ = Board.get_board_rot(columns_copy)
+        for coord in sequence:  # upper to lower
+            columns_copy[coord[0]][coord[1]] += ord('a') - ord('A')
+        rot_ = get_board_rot_ord(columns_copy)
         characterized_ = [list(map(chr, row)) for row in rot_]
         repr_list = [repr(row) for row in characterized_]
         repr_dirty = "\n".join(repr_list)
@@ -209,13 +222,6 @@ class Board:
         # Might as well just make it a separate staticmethod
         return self.get_board_repr(self.columns, self.current_coord_seq)
 
-    def get_board_columns_repr(self):
-        characterized_ = [list(map(chr, column)) for column in self.columns]
-        repr_list = [repr(column) for column in characterized_]
-        repr_dirty = "\n".join(repr_list)
-        repr_clean = repr_dirty.replace('\\x00', ' ')
-        return repr_clean
-
     def eval_after_select(self):
         assert self.is_selecting is False
         assert self.current_chr_seq
@@ -226,8 +232,8 @@ class Board:
         if self.eval_word():
             # remove_selection_seq_from_board
             for i, coord in enumerate(self.current_coord_seq):
-                assert self.columns[coord[0]][coord[1]] == ord(self.current_chr_seq[i])
-                self.columns[coord[0]][coord[1]] = 0
+                assert self.columns[coord[0]][coord[1]].letter_ord == ord(self.current_chr_seq[i])
+                self.columns[coord[0]][coord[1]] = Tile(0)
         else:
             score = -score
 
