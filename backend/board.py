@@ -109,6 +109,21 @@ class Board:
                     return nth + ord('A')
             raise AssertionError("board random tried to return None")
 
+        def get_random_tile(self, current_bonus_count=0):
+            chr_ord = self.get_random_ascii()
+            bonus = None
+            if current_bonus_count < 5:
+                match self.random.randint(0, 49):
+                    case 0:
+                        bonus = "DL"
+                    case 1:
+                        bonus = "DW"
+                    case 2:
+                        bonus = "TL"
+                    case 3:
+                        bonus = "TW"
+            return Tile(chr_ord, bonus)
+
     def empty(self):
         self.columns = [[Tile(0) for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]
         self.fall_distance = [[] for _ in range(BOARD_WIDTH)]
@@ -118,7 +133,7 @@ class Board:
         for i, column in enumerate(self.columns):
             to_add = column.count(Tile(0))
             for _ in range(to_add):
-                rand = Tile(self.random_.get_random_ascii())
+                rand = self.random_.get_random_tile()
                 column.append(rand)
 
             self.fall_distance[i] = []
