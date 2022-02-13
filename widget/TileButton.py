@@ -18,6 +18,7 @@ class TileButton(QPushButton):
 
         self.score_label = QLabel(self)
         self.score_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.setStyleSheet("font: bold")
 
     def resizeEvent(self, event:QResizeEvent) -> None:
         self.letter_label_resize()

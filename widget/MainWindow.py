@@ -30,6 +30,8 @@ class MainWindow(QMainWindow):
         self.ui.frame_Top.game_over.connect(self.update_statusbar)
         self.ui.frame_Top.game_over.connect(self.game_timer.stop)
 
+        self.adjustSize()
+
     def update_statusbar(self):
         timer = monotonic() - self.ui.frame_Top.game_start_time
         found = self.ui.frame_Top.game_found_words
