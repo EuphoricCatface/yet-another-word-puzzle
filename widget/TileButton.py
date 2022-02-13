@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QPushButton, QLabel
 
 from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent, QResizeEvent
 from PySide6.QtCore import Qt
-from backend.board import LETTER_SCORE
+from backend.board import LETTER_SCORE, Tile
 
 
 class TileButton(QPushButton):
@@ -18,10 +18,13 @@ class TileButton(QPushButton):
 
         self.score_label = QLabel(self)
         self.score_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.bonus_label = QLabel(self)
+        self.bonus_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.setStyleSheet("font: bold")
 
     def resizeEvent(self, event:QResizeEvent) -> None:
         self.letter_label_resize()
+        self.bonus_label_resize()
         super(TileButton, self).resizeEvent(event)
 
     def letter_label_resize(self):
@@ -31,6 +34,13 @@ class TileButton(QPushButton):
             sz.width() // 3, sz.height() // 2
         )
         self.score_label.setStyleSheet("font-size: 8px")
+
+    def bonus_label_resize(self):
+        sz = self.size()
+        self.bonus_label.setGeometry(
+            sz.width() - sz.width() // 3, 0,
+            sz.width() // 3, sz.height() // 2
+        )
 
     def set_char(self, char: str):
         # TODO: Handle other infos, score and bonus
@@ -58,6 +68,22 @@ class TileButton(QPushButton):
             self.setChecked(False)
             # self.setFlat(False)
         self.set_char(char)
+
+    def set_tile(self, tile: Tile):
+        self.set_ascii(tile.letter_ord)
+
+        if not tile.bonus:
+            self.bonus_label.hide()
+            return
+
+        self.bonus_label.setText(tile.bonus)
+        style_sheet = "font: 8px bold; color: white"
+        if tile.bonus[0] == 'T':
+            style_sheet = "background-color: red; " + style_sheet
+        elif tile.bonus[0] == 'D':
+            style_sheet = "background-color: blue; " + style_sheet
+        self.bonus_label.setStyleSheet(style_sheet)
+        self.bonus_label.show()
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         # print(e.pos())

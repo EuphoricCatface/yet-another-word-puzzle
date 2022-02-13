@@ -51,7 +51,7 @@ class BoardWidget(QFrame):
                 e = self.button_columns[x][y]
                 e.move(x * 40 + 5, 200 - (y + 1) * 40 + 5)
                 e.setFixedSize(30, 30)
-                e.set_ascii(tile.letter_ord)
+                e.set_tile(tile)
                 e.x_board = x
                 e.y_board = y
 
