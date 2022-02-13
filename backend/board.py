@@ -267,8 +267,6 @@ class Board:
 
 def test_main():
     import readline
-    import word_evaluation
-    word_evaluation.Evaluation.load()
     board = Board()
     try:
         while True:
@@ -276,7 +274,8 @@ def test_main():
             board.eliminate_empty()
             while True:
                 print(board)
-                print(f"current word = {board.current_chr_seq}")
+                if board.is_selecting:
+                    print(f"current word = {board.get_current_word()}, score = {board.eval_score()}")
                 cmd = input("move? ")
                 cmd.strip()
                 cmd_list = cmd.split()
@@ -286,16 +285,11 @@ def test_main():
                     case 'N':
                         board.next_select(int(cmd_list[1]), int(cmd_list[2]))
                     case 'E':
-                        word = "".join(board.end_select())
-                        print(word)
-                        eval_result = word_evaluation.Evaluation.eval(word)
-                        print(eval_result)
-                        if not eval_result:
-                            board.selection_seq_clear()
-                            continue
-                        board.remove_selection_seq_from_board()
-                        board.selection_seq_clear()
+                        board.end_select()
+                        print(board.get_current_word())
                         break
+            ret = board.eval_after_select()
+            print(f"{abs(ret)} {'won' if (ret > 0) else 'discarded'}")
 
     except KeyboardInterrupt:
         print()
