@@ -6,6 +6,7 @@ from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QEasingC
 from widget import TileButton
 
 from backend import board
+import time
 
 TILE_COLUMNS = 5
 TILE_ROWS = 5
@@ -24,6 +25,8 @@ class BoardWidget(QFrame):
         self.setAcceptDrops(True)
 
         self.board = board.Board()
+        self.drag_start_time = 0
+        self.last_game_over_time = 0
 
         self.button_columns: [list[list[TileButton.TileButton]]] = [
             [TileButton.TileButton(self) for _ in range(5)]
@@ -110,6 +113,7 @@ class BoardWidget(QFrame):
         # print(f"closed {count} buttons")
 
     def start_drag(self, x, y) -> None:
+        self.drag_start_time = time.monotonic()
         if self.board.is_selecting:
             print("Previous drag seem to have ended up elsewhere")
             print("-> Ignoring new drag")
@@ -168,6 +172,10 @@ class BoardWidget(QFrame):
         self.char_list_update.emit(word, score)
 
     def end_tile(self):
+        if self.drag_start_time < self.last_game_over_time:
+            print("WORKAROUND: drag started before the last game ended - please restart the game")
+            return
+
         word = self.board.end_select()
         for coord in self.board.current_coord_seq:
             x, y = coord
@@ -182,3 +190,9 @@ class BoardWidget(QFrame):
             self.board.fill_prepare()
             self.board_sync()
             self.drop_animation()
+
+    @Slot()
+    def game_over(self):
+        self.last_game_over_time = time.monotonic()
+        self.setEnabled(False)
+

@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.ui.frame_Board.score_add.connect(self.ui.frame_Top.add_score)
         self.ui.frame_Board.char_list_update.connect(self.ui.frame_Top.word_display)
         self.ui.frame_Board.char_list_deactivate.connect(self.ui.frame_Top.word_deactivate)
-        self.ui.frame_Top.game_over.connect(lambda: self.ui.frame_Board.setDisabled(True))
+        self.ui.frame_Top.game_over.connect(self.ui.frame_Board.game_over)
 
         self.game_timer = QTimer()
         self.game_timer.setInterval(100)
