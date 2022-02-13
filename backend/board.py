@@ -265,9 +265,19 @@ class Board:
         assert self.current_coord_seq
 
         score = 0
+        word_modifier = 1
         for tile in self.current_tile_seq:
-            score += LETTER_SCORE[tile.letter_ord - ord('A')]
-        return score
+            letter_modifier = 1
+            if tile.bonus == 'DL':
+                letter_modifier = 2
+            elif tile.bonus == 'TL':
+                letter_modifier = 3
+            elif word_modifier < 2 and tile.bonus == 'DW':
+                word_modifier = 2
+            elif word_modifier < 3 and tile.bonus == 'TW':
+                word_modifier = 3
+            score += LETTER_SCORE[tile.letter_ord - ord('A')] * letter_modifier
+        return score * word_modifier
 
     def eval_word(self):
         # Evaluation can reject shorter words by not loading them, but Qu can mess this up
