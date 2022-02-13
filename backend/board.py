@@ -39,6 +39,9 @@ class Tile:
             return False
         return self.letter_ord == other.letter_ord and self.bonus == other.bonus
 
+    def __repr__(self):
+        return f"{chr(self.letter_ord) if self.letter_ord else ' '}_{self.bonus if self.bonus else 'no'}"
+
 
 class Board:
     COLUMNS_TYPE = list[list[Tile]]
@@ -199,19 +202,18 @@ class Board:
 
     @staticmethod
     def get_board_repr(columns: COLUMNS_TYPE, sequence: list[tuple[int, int]]):
-        def get_board_rot_ord(columns_: Board.COLUMNS_TYPE) -> list[list[int]]:
+        def get_board_rot(columns_: Board.COLUMNS_TYPE) -> Board.COLUMNS_TYPE:
             board_rot = [  # inverse of the board here
-                [columns_[x][y].letter_ord for x in range(BOARD_WIDTH)]
+                [columns_[x][y] for x in range(BOARD_WIDTH)]
                 for y in range(BOARD_HEIGHT)
             ]
             board_rot.reverse()
             return board_rot
         columns_copy = [column.copy() for column in columns]
-        for coord in sequence:  # upper to lower
-            columns_copy[coord[0]][coord[1]] += ord('a') - ord('A')
-        rot_ = get_board_rot_ord(columns_copy)
-        characterized_ = [list(map(chr, row)) for row in rot_]
-        repr_list = [repr(row) for row in characterized_]
+        for coord in sequence:  # upper to lower - NOTE: DIRTY HACK!
+            columns_copy[coord[0]][coord[1]].letter_ord += ord('a') - ord('A')
+        rot_ = get_board_rot(columns_copy)
+        repr_list = [repr(row) for row in rot_]
         repr_dirty = "\n".join(repr_list)
         repr_clean = repr_dirty.replace('\\x00', ' ')
         return repr_clean
