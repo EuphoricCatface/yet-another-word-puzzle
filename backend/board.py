@@ -187,12 +187,12 @@ class Board:
                 y >= BOARD_WIDTH:
             raise IndexError
         assert len(self.current_tile_seq) == len(self.current_coord_seq)
-        assert self.current_tile_seq and self.current_coord_seq
 
         if ALLOW_START_SELECTING_WITH_NEXT_SELECTION:
             if self.is_selecting is False:
                 return True, self.start_select(x, y)
         else:
+            assert self.current_tile_seq and self.current_coord_seq
             assert self.is_selecting is True
 
         if len(self.current_coord_seq) >= 2 and \
