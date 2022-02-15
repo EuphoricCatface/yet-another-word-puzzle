@@ -43,18 +43,20 @@ class Tile:
         return f"{chr(self.letter_ord) if self.letter_ord else ' '}_{self.bonus if self.bonus else 'no'}"
 
 
-class Board:
-    COLUMNS_TYPE = list[list[Tile]]
+COLUMNS_TYPE = list[list[Tile]]
+COORD_SEQ_TYPE = list[tuple[int, int]]
 
+
+class Board:
     def __init__(self):
         # Columns don't interact between each other. Let's treat each column as a list
         # The first column is on the left, and the first element is at the bottom
-        self.columns: Board.COLUMNS_TYPE = []
+        self.columns: COLUMNS_TYPE = []
         self.fall_distance: list[list[int]] = []
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
 
         self.current_tile_seq: list[Tile] = []
-        self.current_coord_seq: list[tuple[int, int]] = []
+        self.current_coord_seq: COORD_SEQ_TYPE = []
         self.is_selecting: bool = False
         self.deselect: [tuple[int, int] | None] = None
         self.random = None
@@ -225,7 +227,7 @@ class Board:
 
     @staticmethod
     def get_board_repr(columns: COLUMNS_TYPE, sequence: list[tuple[int, int]]):
-        def get_board_rot(columns_: Board.COLUMNS_TYPE) -> Board.COLUMNS_TYPE:
+        def get_board_rot(columns_: COLUMNS_TYPE) -> COLUMNS_TYPE:
             board_rot = [  # inverse of the board here
                 [columns_[x][y] for x in range(BOARD_WIDTH)]
                 for y in range(BOARD_HEIGHT)
@@ -298,6 +300,17 @@ class Board:
         while 'Q' in chr_list:
             chr_list[chr_list.index('Q')] = 'QU'
         return "".join(chr_list)
+
+    class History:
+        def __init__(self, seed):
+            self.seed = seed
+            self.moves: list[COORD_SEQ_TYPE] = []
+
+        def move_push(self, move: COORD_SEQ_TYPE):
+            self.moves.append(move)
+
+        def move_pop(self) -> COORD_SEQ_TYPE:
+            return self.moves.pop()
 
     # TODO: Add undo / redo
     #  Restore random state on undo
