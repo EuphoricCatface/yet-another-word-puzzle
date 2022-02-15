@@ -332,6 +332,7 @@ class Board:
             self.redo_moves.clear()
 
     def undo(self) -> (COORD_SEQ_TYPE, int):
+        assert self.move_history.moves
         # Init the board with the seed, redo all the way to the move before.
         # Might be a bit slow, but implementation should be easier, right?
 
@@ -361,6 +362,7 @@ class Board:
         return last_move, last_score
 
     def redo(self):
+        assert self.move_history.redo_moves
         redo_move = self.move_history.redo_pop()
 
         # Perform move
