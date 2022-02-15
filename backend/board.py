@@ -262,8 +262,10 @@ class Board:
 
         if self.eval_word():
             assert self.move_history
-            if history:
+            if history:  # Skip these if undo/redo
                 self.move_history.move_push(self.current_coord_seq, score)
+                self.move_history.redo_purge()
+
             # remove_selection_seq_from_board
             for i, coord in enumerate(self.current_coord_seq):
                 assert self.columns[coord[0]][coord[1]] == self.current_tile_seq[i]
@@ -357,6 +359,24 @@ class Board:
 
         self.move_history.redo_push(last_move)
         return last_move, last_score
+
+    def redo(self):
+        redo_move = self.move_history.redo_pop()
+
+        # Perform move
+        for element in redo_move:
+            sel_rtn, _ = self.next_select(*element)
+            assert sel_rtn
+        self.end_select()
+        score = self.eval_after_select(history=False)
+        # `self.eval_after_select(history=True)` will purge `redo_moves`
+        assert score > 0
+        self.move_history.move_push(redo_move, score)
+
+        self.fill_prepare()
+        # Perform eliminate_empty separately afterwards. This is for GUI animation
+        # self.eliminate_empty()
+        return score
 
     # TODO: Add undo / redo
     #  Restore random state on undo
