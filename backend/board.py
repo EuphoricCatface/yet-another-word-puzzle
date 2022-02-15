@@ -59,9 +59,9 @@ class Board:
         self.deselect: [tuple[int, int] | None] = None
         self.random = None
 
-    def game_setup(self):
+    def game_setup(self, seed=None):
         # TODO: add seeded random
-        self.random = Board.Random(random.SystemRandom().randbytes(16).hex())
+        self.random = Board.Random(seed)
         self.empty()
         self.selection_seq_clear()
         self.is_selecting = False
@@ -77,6 +77,8 @@ class Board:
 
     class Random:
         def __init__(self, seed):
+            if seed is None:
+                self.seed = random.SystemRandom().randbytes(16).hex()
             self.seed = seed
             self.random = random.Random(bytes.fromhex(self.seed))
 
