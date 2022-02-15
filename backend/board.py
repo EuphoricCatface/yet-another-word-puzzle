@@ -391,6 +391,7 @@ def test_main():
     board.game_setup()
     try:
         while True:
+            end_turn = False
             board.fill_prepare()
             board.eliminate_empty()
             while True:
@@ -408,9 +409,16 @@ def test_main():
                     case 'E':
                         board.end_select()
                         print(board.get_current_word())
+                        end_turn = True
                         break
-            ret = board.eval_after_select()
-            print(f"{abs(ret)} {'won' if (ret > 0) else 'discarded'}")
+                    case 'R':
+                        board.redo()
+                        board.eliminate_empty()
+                    case 'U':
+                        board.undo()
+            if end_turn:
+                ret = board.eval_after_select()
+                print(f"{abs(ret)} {'won' if (ret > 0) else 'discarded'}")
 
     except KeyboardInterrupt:
         print()
