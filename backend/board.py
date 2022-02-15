@@ -54,7 +54,7 @@ class Board:
         self.empty()
         # 0 means empty place, and values from ord('A') to ord('Z') means a tile
 
-        self.current_chr_seq: list[str] = []
+        self.current_tile_seq: list[Tile] = []
         self.current_coord_seq: list[tuple[int, int]] = []
         self.is_selecting: bool = False
         self.deselect: [tuple[int, int] | None] = None
@@ -151,19 +151,19 @@ class Board:
             for _ in range(to_eliminate):
                 column.remove(Tile(0))
 
-    def start_select(self, x: int, y: int) -> list[str]:
+    def start_select(self, x: int, y: int) -> list[Tile]:
         if x < 0 or \
                 y < 0 or \
                 x >= BOARD_WIDTH or\
                 y >= BOARD_WIDTH:
             raise IndexError
-        assert not (self.current_chr_seq or self.current_coord_seq)
+        assert not (self.current_tile_seq or self.current_coord_seq)
         assert self.is_selecting is False
 
-        self.current_chr_seq.append(chr(self.columns[x][y].letter_ord))
+        self.current_tile_seq.append(self.columns[x][y])
         self.current_coord_seq.append((x, y))
         self.is_selecting = True
-        return self.current_chr_seq
+        return self.current_tile_seq
 
     def next_select(self, x: int, y: int) -> (bool, list[str]):
         # TODO: allow farther candidates, selecting ones inbetween
@@ -173,8 +173,8 @@ class Board:
                 x >= BOARD_WIDTH or\
                 y >= BOARD_WIDTH:
             raise IndexError
-        assert len(self.current_chr_seq) == len(self.current_coord_seq)
-        assert self.current_chr_seq and self.current_coord_seq
+        assert len(self.current_tile_seq) == len(self.current_coord_seq)
+        assert self.current_tile_seq and self.current_coord_seq
 
         if ALLOW_START_SELECTING_WITH_NEXT_SELECTION:
             if self.is_selecting is False:
@@ -186,35 +186,35 @@ class Board:
                 self.current_coord_seq[-2] == (x, y):
             # Falling back
             self.deselect = self.current_coord_seq.pop()
-            self.current_chr_seq.pop()
-            return True, self.current_chr_seq
+            self.current_tile_seq.pop()
+            return True, self.current_tile_seq
 
         if (x, y) in self.current_coord_seq:
             # This is not a new tile
-            return False, self.current_chr_seq
+            return False, self.current_tile_seq
 
         current = self.current_coord_seq[-1]
         if current == (x, y):
             # The tile is same as the current head
-            return False, self.current_chr_seq
+            return False, self.current_tile_seq
         d_x = current[0] - x
         d_y = current[1] - y
         if d_x not in (-1, 0, 1) or \
                 d_y not in (-1, 0, 1):
             # this is not a neighbor of the current head
-            return False, self.current_chr_seq
+            return False, self.current_tile_seq
 
-        self.current_chr_seq.append(chr(self.columns[x][y].letter_ord))
+        self.current_tile_seq.append(self.columns[x][y])
         self.current_coord_seq.append((x, y))
-        return True, self.current_chr_seq
+        return True, self.current_tile_seq
 
     def end_select(self):
-        assert len(self.current_chr_seq) == len(self.current_coord_seq)
-        assert self.current_chr_seq and self.current_coord_seq
+        assert len(self.current_tile_seq) == len(self.current_coord_seq)
+        assert self.current_tile_seq and self.current_coord_seq
         assert self.is_selecting is True
 
         self.is_selecting = False
-        return self.current_chr_seq
+        return self.current_tile_seq
 
     @staticmethod
     def get_board_repr(columns: COLUMNS_TYPE, sequence: list[tuple[int, int]]):
@@ -242,7 +242,7 @@ class Board:
 
     def eval_after_select(self):
         assert self.is_selecting is False
-        assert self.current_chr_seq
+        assert self.current_tile_seq
         assert self.current_coord_seq
 
         score = self.eval_score()
@@ -250,28 +250,28 @@ class Board:
         if self.eval_word():
             # remove_selection_seq_from_board
             for i, coord in enumerate(self.current_coord_seq):
-                assert self.columns[coord[0]][coord[1]].letter_ord == ord(self.current_chr_seq[i])
+                assert self.columns[coord[0]][coord[1]] == self.current_tile_seq[i]
                 self.columns[coord[0]][coord[1]] = Tile(0)
         else:
             score = -score
 
         # selection_seq_clear
-        self.current_chr_seq.clear()
+        self.current_tile_seq.clear()
         self.current_coord_seq.clear()
         return score
 
     def eval_score(self):
-        assert self.current_chr_seq
+        assert self.current_tile_seq
         assert self.current_coord_seq
 
         score = 0
-        for i in self.current_chr_seq:
-            score += LETTER_SCORE[ord(i) - ord('A')]
+        for tile in self.current_tile_seq:
+            score += LETTER_SCORE[tile.letter_ord - ord('A')]
         return score
 
     def eval_word(self):
         # Evaluation can reject shorter words by not loading them, but Qu can mess this up
-        if len(self.current_chr_seq) < 3:
+        if len(self.current_tile_seq) < 3:
             return False
 
         return word_evaluation.Evaluation.eval(
@@ -279,7 +279,7 @@ class Board:
         )
 
     def get_current_word(self):
-        chr_list = self.current_chr_seq.copy()
+        chr_list = [chr(x.letter_ord) for x in self.current_tile_seq]
         while 'Q' in chr_list:
             chr_list[chr_list.index('Q')] = 'QU'
         return "".join(chr_list)
