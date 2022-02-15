@@ -59,11 +59,15 @@ class Board:
         self.current_coord_seq: COORD_SEQ_TYPE = []
         self.is_selecting: bool = False
         self.deselect: [tuple[int, int] | None] = None
-        self.random = None
+
+        # The following two are initialized in game_setup
+        self.random: Board.Random | None = None
+        self.move_history: Board.History | None = None
 
     def game_setup(self, seed=None):
         # TODO: add seeded random
         self.random = Board.Random(seed)
+        self.move_history = Board.History(self.random.seed)
         self.empty()
         self.selection_seq_clear()
         self.is_selecting = False
@@ -80,7 +84,7 @@ class Board:
     class Random:
         def __init__(self, seed):
             if seed is None:
-                self.seed = random.SystemRandom().randbytes(16).hex()
+                seed = random.SystemRandom().randbytes(16).hex()
             self.seed = seed
             self.random = random.Random(bytes.fromhex(self.seed))
 
@@ -257,6 +261,8 @@ class Board:
         score = self.eval_score()
 
         if self.eval_word():
+            assert self.move_history
+            self.move_history.move_push(self.current_coord_seq)
             # remove_selection_seq_from_board
             for i, coord in enumerate(self.current_coord_seq):
                 assert self.columns[coord[0]][coord[1]] == self.current_tile_seq[i]
