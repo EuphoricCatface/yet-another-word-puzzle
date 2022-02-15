@@ -333,6 +333,12 @@ class Board:
         def redo_purge(self):
             self.redo_moves.clear()
 
+        def has_undo(self):
+            return bool(self.moves)
+
+        def has_redo(self):
+            return bool(self.redo_moves)
+
     def undo(self) -> (COORD_SEQ_TYPE, int):
         assert self.move_history.moves
         # Init the board with the seed, redo all the way to the move before.
@@ -400,6 +406,7 @@ def test_main():
                 print(board)
                 if board.is_selecting:
                     print(f"current word = {board.get_current_word()}, score = {board.eval_score()}")
+                print(f"{board.move_history.has_undo()=}, {board.move_history.has_redo()=}")
                 cmd = input("move? ")
                 cmd.strip()
                 cmd_list = cmd.split()
