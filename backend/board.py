@@ -6,7 +6,7 @@ from backend import word_evaluation
 BOARD_WIDTH = 5
 BOARD_HEIGHT = 5
 
-ALLOW_START_SELECTING_WITH_NEXT_SELECTION = False
+ALLOW_START_SELECTING_WITH_NEXT_SELECTION = True
 
 # Letter scores from official scrabble rule
 LETTER_SCORE = [
@@ -253,7 +253,7 @@ class Board:
         # Might as well just make it a separate staticmethod
         return self.get_board_repr(self.columns, self.current_coord_seq)
 
-    def eval_after_select(self):
+    def eval_after_select(self, history=True):
         assert self.is_selecting is False
         assert self.current_tile_seq
         assert self.current_coord_seq
@@ -262,7 +262,8 @@ class Board:
 
         if self.eval_word():
             assert self.move_history
-            self.move_history.move_push(self.current_coord_seq)
+            if history:
+                self.move_history.move_push(self.current_coord_seq, score)
             # remove_selection_seq_from_board
             for i, coord in enumerate(self.current_coord_seq):
                 assert self.columns[coord[0]][coord[1]] == self.current_tile_seq[i]
@@ -310,13 +311,52 @@ class Board:
     class History:
         def __init__(self, seed):
             self.seed = seed
-            self.moves: list[COORD_SEQ_TYPE] = []
+            self.moves: list[tuple[COORD_SEQ_TYPE, int]] = []
+            self.redo_moves: list[COORD_SEQ_TYPE] = []
 
-        def move_push(self, move: COORD_SEQ_TYPE):
-            self.moves.append(move)
+        def move_push(self, move: COORD_SEQ_TYPE, score: int):
+            self.moves.append((move, score))
 
-        def move_pop(self) -> COORD_SEQ_TYPE:
+        def move_pop(self) -> (COORD_SEQ_TYPE, int):
             return self.moves.pop()
+
+        def redo_push(self, move: COORD_SEQ_TYPE):
+            self.redo_moves.append(move)
+
+        def redo_pop(self) -> COORD_SEQ_TYPE:
+            return self.redo_moves.pop()
+
+        def redo_purge(self):
+            self.redo_moves.clear()
+
+    def undo(self) -> (COORD_SEQ_TYPE, int):
+        # Init the board with the seed, redo all the way to the move before.
+        # Might be a bit slow, but implementation should be easier, right?
+
+        # These will be returned so that GUI will know which tiles to move up, and how much to subtract from score
+        last_move, last_score = self.move_history.move_pop()
+
+        # Init board
+        self.selection_seq_clear()
+        self.is_selecting = False
+        self.random = Board.Random(self.move_history.seed)
+        self.empty()
+        self.fill_prepare()
+        self.eliminate_empty()
+
+        # Perform move
+        for move, _ in self.move_history.moves:
+            for element in move:
+                sel_rtn = self.next_select(*element)
+                assert sel_rtn
+            self.end_select()
+            score = self.eval_after_select(history=False)
+            assert score > 0
+            self.fill_prepare()
+            self.eliminate_empty()
+
+        self.move_history.redo_push(last_move)
+        return last_move, last_score
 
     # TODO: Add undo / redo
     #  Restore random state on undo
