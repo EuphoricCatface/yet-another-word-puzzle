@@ -1,5 +1,6 @@
 import random
 from math import lcm
+from copy import deepcopy
 
 from backend import word_evaluation
 
@@ -238,7 +239,8 @@ class Board:
             ]
             board_rot.reverse()
             return board_rot
-        columns_copy = [column.copy() for column in columns]
+
+        columns_copy = [deepcopy(column) for column in columns]
         for coord in sequence:  # upper to lower - NOTE: DIRTY HACK!
             columns_copy[coord[0]][coord[1]].letter_ord += ord('a') - ord('A')
         rot_ = get_board_rot(columns_copy)
@@ -263,7 +265,7 @@ class Board:
         if self.eval_word():
             assert self.move_history
             if history:  # Skip these if undo/redo
-                self.move_history.move_push(self.current_coord_seq, score)
+                self.move_history.move_push(deepcopy(self.current_coord_seq), score)
                 self.move_history.redo_purge()
 
             # remove_selection_seq_from_board
