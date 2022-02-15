@@ -59,9 +59,6 @@ class Board:
         self.deselect: [tuple[int, int] | None] = None
         self.random = None
 
-        # TODO: add scoring
-        # TODO: add double/triple letter/word bonus
-
     def game_setup(self):
         # TODO: add seeded random
         self.random = Board.Random(random.SystemRandom().randbytes(16).hex())

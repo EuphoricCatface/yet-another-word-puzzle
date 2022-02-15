@@ -44,7 +44,6 @@ class TileButton(QPushButton):
         )
 
     def set_char(self, char: str):
-        # TODO: Handle other infos, score and bonus
         self.character = char
         if char == ' ':
             self.score_label.setText(' ')
