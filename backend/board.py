@@ -388,6 +388,7 @@ class Board:
 def test_main():
     import readline
     board = Board()
+    board.game_setup()
     try:
         while True:
             board.fill_prepare()
