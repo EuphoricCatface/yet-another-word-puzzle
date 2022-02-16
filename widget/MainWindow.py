@@ -33,6 +33,10 @@ class MainWindow(QMainWindow):
         self.ui.actionNew.triggered.connect(self.ui.frame_Top.game_timer.start)
         self.ui.actionNew.triggered.connect(self.ui.frame_Board.game_init)
         self.ui.actionNew.triggered.connect(self.game_timer.start)
+        # TODO: De-/activate undo/redo on condition
+        self.ui.actionUndo.triggered.connect(self.ui.frame_Board.undo)
+        self.ui.actionRedo.triggered.connect(self.ui.frame_Board.redo)
+
         self.adjustSize()
 
     def update_statusbar(self):

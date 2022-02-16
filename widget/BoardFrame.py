@@ -197,3 +197,16 @@ class BoardWidget(QFrame):
         self.last_game_over_time = time.monotonic()
         self.setEnabled(False)
 
+    @Slot()
+    def undo(self):
+        _move, score = self.board.undo()
+        # TODO: undo animation
+        self.board_sync()
+        self.score_add.emit(-score)
+
+    @Slot()
+    def redo(self):
+        score = self.board.redo()
+        self.score_add.emit(score)
+        self.board_sync()
+        self.drop_animation()
