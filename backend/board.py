@@ -388,10 +388,6 @@ class Board:
         # self.eliminate_empty()
         return score
 
-    # TODO: Add undo / redo
-    #  Restore random state on undo
-    #  Burn entropy after a move, in order to not give the same new tile after different move
-
 
 def test_main():
     import readline
