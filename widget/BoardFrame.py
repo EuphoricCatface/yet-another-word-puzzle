@@ -16,6 +16,7 @@ class BoardWidget(QFrame):
     char_list_update = Signal(str, int)
     char_list_deactivate = Signal()
     score_add = Signal(int)
+    score_undo = Signal(int)
 
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
@@ -202,11 +203,12 @@ class BoardWidget(QFrame):
         _move, score = self.board.undo()
         # TODO: undo animation
         self.board_sync()
-        self.score_add.emit(-score)
+        self.score_undo.emit(score)
 
     @Slot()
     def redo(self):
         score = self.board.redo()
         self.score_add.emit(score)
+        # TODO: redo animation
         self.board_sync()
         self.drop_animation()

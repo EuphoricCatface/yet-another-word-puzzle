@@ -55,6 +55,12 @@ class TopFrame(QFrame):
         # counting a turn only when it's a valid word
         self.game_found_words += 1
 
+    @Slot(int)
+    def score_undo(self, score: int):
+        self.score -= score
+        self.ui.label_score.setText(f"Score: {self.score}")
+        self.game_found_words -= 1
+
     @Slot()
     def init_score(self):
         self.score = 0
