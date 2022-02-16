@@ -14,7 +14,7 @@ class TopFrame(QFrame):
         self.ui.setupUi(self)
 
         self.score = 0
-        self.ui.pushButton_start.clicked.connect(self.init_game)
+        # self.ui.pushButton_start.clicked.connect(self.init_game)
 
         self.game_start_time = 0
         self.game_found_words = 0
@@ -25,7 +25,7 @@ class TopFrame(QFrame):
         self.game_timer.setInterval(100)
         self.game_timer.timeout.connect(self.game_over_check)
 
-        self.ui.pushButton_start.clicked.connect(self.game_timer.start)
+        # self.ui.pushButton_start.clicked.connect(self.game_timer.start)
         self.game_over.connect(self.game_timer.stop)
 
         # TODO: Make game over rules
@@ -51,7 +51,7 @@ class TopFrame(QFrame):
     @Slot(int)
     def add_score(self, score: int):
         self.score += score
-        self.ui.label_score.setText(str(self.score))
+        self.ui.label_score.setText(f"Score: {self.score}")
         # counting a turn only when it's a valid word
         self.game_found_words += 1
 
@@ -59,6 +59,7 @@ class TopFrame(QFrame):
     def init_score(self):
         self.score = 0
         self.add_score(0)
+        self.ui.label_countdown.setText("--")
 
     @Slot(str, int)
     def word_display(self, word, score):
@@ -90,9 +91,10 @@ class TopFrame(QFrame):
 
     @Slot()
     def game_over_check(self):
-        criteria = self.game_start_time
-        remaining_rule = criteria + 90 - time.monotonic()
+        criteria = self.game_found_words
+        initial_state = 10
+        remaining_rule = initial_state - criteria
 
-        self.ui.label_countdown.setText(str(int(remaining_rule)))
+        self.ui.label_countdown.setText(f"{remaining_rule} / {initial_state}")
         if remaining_rule <= 0:
             self.game_over.emit()

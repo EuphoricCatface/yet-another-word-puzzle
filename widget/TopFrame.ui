@@ -6,31 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>226</width>
-    <height>125</height>
+    <width>200</width>
+    <height>100</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <widget class="QLabel" name="label_word">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButton_start">
-     <property name="text">
-      <string>New Game</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="2">
     <widget class="QLabel" name="label_wordscore">
      <property name="text">
@@ -38,17 +21,16 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
+   <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="label_score">
-     <property name="text">
-      <string>TextLabel</string>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="label_scoretag">
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
      <property name="text">
-      <string>Score:</string>
+      <string>Score: 100</string>
      </property>
     </widget>
    </item>
@@ -59,24 +41,29 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="label_remaining">
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_word">
      <property name="text">
-      <string>Remaining:</string>
+      <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="0" column="2">
     <widget class="QLabel" name="label_countdown">
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
      <property name="text">
-      <string/>
+      <string>5 / 10</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>

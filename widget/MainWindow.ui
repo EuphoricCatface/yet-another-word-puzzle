@@ -82,8 +82,22 @@
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuNew_Game">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <addaction name="actionNew"/>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
