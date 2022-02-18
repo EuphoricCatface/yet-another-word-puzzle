@@ -29,6 +29,8 @@ class BoardWidget(QFrame):
         self.drag_start_time = 0
         self.last_game_over_time = 0
 
+        self.next_game_seed = None
+
         self.button_columns: [list[list[TileButton.TileButton]]] = [
             [TileButton.TileButton(self) for _ in range(5)]
             for _ in range(5)
@@ -43,10 +45,24 @@ class BoardWidget(QFrame):
     @Slot()
     def game_init(self):
         self.setEnabled(True)
-        self.board.game_setup()
+        if self.next_game_seed:
+            self.board.game_setup(self.next_game_seed)
+        else:
+            self.board.game_setup()
         self.board.fill_prepare()
         self.board_sync()
         self.drop_animation()
+
+    @Slot(str)
+    def set_seed(self, seed: str):
+        if len(seed) != 32:
+            return False
+        try:
+            self.next_game_seed = int(seed, 16)
+        except ValueError:
+            return False
+
+        return True
 
     def board_sync(self):
         for x, column in enumerate(self.board.columns):
