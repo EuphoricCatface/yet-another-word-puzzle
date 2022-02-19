@@ -98,7 +98,7 @@ class TopFrame(QFrame):
     @Slot()
     def game_over_check(self):
         criteria = self.game_found_words
-        initial_state = 10
+        initial_state = 20
         remaining_rule = initial_state - criteria
 
         self.ui.label_countdown.setText(f"{remaining_rule} / {initial_state}")
