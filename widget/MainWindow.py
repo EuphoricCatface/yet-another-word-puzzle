@@ -22,6 +22,7 @@ class GetSetRandDialog(QDialog):
         self.get_seed_lineedit = QLineEdit()
         self.get_seed_lineedit.setReadOnly(True)
         self.get_seed_lineedit.setPlaceholderText("N/A")
+        self.get_seed_lineedit.setStyleSheet("background: palette(window)")
         # QTimer: resolve race condition with default mousePressEvent
         self.get_seed_lineedit.focusInEvent = lambda e: \
             QTimer.singleShot(0, self.get_seed_lineedit.selectAll)
