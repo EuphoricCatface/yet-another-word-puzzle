@@ -8,6 +8,10 @@ BOARD_WIDTH = 5
 BOARD_HEIGHT = 5
 
 ALLOW_START_SELECTING_WITH_NEXT_SELECTION = True
+BOTTOM_ROW_IS_ALWAYS_BONUS = True
+BOTTOM_ROW_BONUS_IS_ALWAYS_WORD = True
+NEW_TILE_RANDOM_BONUS = True
+NEW_TILE_BONUS_IS_ALWAYS_LETTER = True
 
 # Letter scores from official scrabble rule
 LETTER_SCORE = [
@@ -136,18 +140,20 @@ class Board:
             lw_bitfield = self.random.randint(0, 1) if lw_bitfield == 3 else lw_bitfield - 1
             return pool[dt_bitfield * 2 + lw_bitfield]
 
-        def get_random_tile(self, current_bonus_count=0):
+        def get_new_tile(self, current_bonus_count=0):
             chr_ord = self.get_random_ascii()
             bonus = None
-            if self.random.randint(0, 49) < 4:
-                bonus = self.get_random_bonus()
+            # current_bonus_count is currently NYI in high level components
+            if NEW_TILE_RANDOM_BONUS and current_bonus_count < 5:
+                if self.random.randint(0, 49) < 4:
+                    bonus = self.get_random_bonus(lw_bitfield=1 if NEW_TILE_BONUS_IS_ALWAYS_LETTER else 3)
             return Tile(chr_ord, bonus)
 
     def fill_prepare(self):
         for i, column in enumerate(self.columns):
             to_add = column.count(Tile(0))
             for _ in range(to_add):
-                rand = self.random.get_random_tile()
+                rand = self.random.get_new_tile()
                 column.append(rand)
 
             self.fall_distance[i] = []
@@ -158,6 +164,15 @@ class Board:
                     self.fall_distance[i].append(-1)
                     continue
                 self.fall_distance[i].append(temp_fall_distance)
+
+            if BOTTOM_ROW_IS_ALWAYS_BONUS and column[0].letter_ord == 0:
+                if self.random.random.randint(0, 10) == 0:
+                    continue
+                i = 0
+                while column[i].letter_ord == 0:
+                    i += 1
+                lw_bitfield = 2 if BOTTOM_ROW_BONUS_IS_ALWAYS_WORD else 3
+                column[i].bonus = self.random.get_random_bonus(lw_bitfield=lw_bitfield)
 
     def eliminate_empty(self):
         for column in self.columns:
