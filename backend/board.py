@@ -128,19 +128,19 @@ class Board:
                     return nth + ord('A')
             raise AssertionError("board random tried to return None")
 
+        def get_random_bonus(self, dt_bitfield=3, lw_bitfield=3):
+            bonus = None
+            assert dt_bitfield-1 in range(3) and lw_bitfield-1 in range(3)
+            pool = ["DL", "DW", "TL", "TW"]
+            dt_bitfield = self.random.randint(0, 1) if dt_bitfield == 3 else dt_bitfield - 1
+            lw_bitfield = self.random.randint(0, 1) if lw_bitfield == 3 else lw_bitfield - 1
+            return pool[dt_bitfield * 2 + lw_bitfield]
+
         def get_random_tile(self, current_bonus_count=0):
             chr_ord = self.get_random_ascii()
             bonus = None
-            if current_bonus_count < 5:
-                match self.random.randint(0, 49):
-                    case 0:
-                        bonus = "DL"
-                    case 1:
-                        bonus = "DW"
-                    case 2:
-                        bonus = "TL"
-                    case 3:
-                        bonus = "TW"
+            if self.random.randint(0, 49) < 4:
+                bonus = self.get_random_bonus()
             return Tile(chr_ord, bonus)
 
     def fill_prepare(self):
