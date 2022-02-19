@@ -60,14 +60,22 @@ class BoardWidget(QFrame):
         self.current_game_seed.emit(seed)
 
     @Slot(str)
-    def set_seed(self, seed: str):
-        if len(seed) != 32:
-            return False
-        try:
-            self.next_game_seed = int(seed, 16)
-        except ValueError:
+    def set_next_seed(self, seed: str):
+        self.next_game_seed = None
+        # If check fails, make the seed unset
+
+        if not seed:
+            # This is intended seed unset
             return False
 
+        assert len(seed) == 32
+        try:
+            int(seed, 16)
+        except ValueError:
+            assert False
+
+        self.next_game_seed = seed
+        print("seed set")
         return True
 
     def board_sync(self):

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QDialog
-from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox
-from PySide6.QtCore import QObject, QTimer, Slot
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox, QToolTip
+from PySide6.QtCore import QObject, QTimer, Slot, Signal
 
 from widget.ui_MainWindow import Ui_MainWindow
 
@@ -8,6 +8,8 @@ from time import monotonic
 
 
 class GetSetRandDialog(QDialog):
+    set_next_seed = Signal(str)
+
     def __init__(self, parent):
         super(GetSetRandDialog, self).__init__(parent)
         self.setWindowTitle("Seeds")
@@ -33,6 +35,7 @@ class GetSetRandDialog(QDialog):
 
         self.confirm_check = QCheckBox()
         self.confirm_check.setText("Apply")
+        self.confirm_check.stateChanged.connect(self.input_seed_confirm)
         self.layout.addWidget(self.confirm_check)
         self.persist_check = QCheckBox()
         self.persist_check.setText("Repeat seed")
@@ -43,6 +46,35 @@ class GetSetRandDialog(QDialog):
     @Slot(str)
     def current_game_seed(self, seed):
         self.get_seed_lineedit.setText(seed)
+
+        if self.persist_check.checkState():
+            self.set_next_seed.emit(self.set_seed_lineedit.text())
+            return
+
+        self.set_seed_lineedit.clear()
+        self.confirm_check.setChecked(False)
+
+    @Slot(bool)
+    def input_seed_confirm(self, check):
+        if not check:
+            self.set_next_seed.emit("")
+
+        seed = self.set_seed_lineedit.text()
+        check_fail = False
+        if len(seed) != 32:
+            check_fail = True
+        try:
+            int(seed, 16)
+        except ValueError:
+            check_fail = True
+
+        if check_fail:
+            QToolTip.showText(self.confirm_check.pos(), "Invalid Seed!")
+            # QTimer: resolve race condition with persist_check (i.e. "Repeat seed") setEnable
+            QTimer.singleShot(0, lambda: self.confirm_check.setChecked(0))
+            return
+
+        self.set_next_seed.emit(seed)
 
 
 class MainWindow(QMainWindow):
@@ -80,6 +112,7 @@ class MainWindow(QMainWindow):
         self.seed_dialog = GetSetRandDialog(self)
         self.ui.actionSet_Get_seed.triggered.connect(self.seed_dialog.show)
         self.ui.frame_Board.current_game_seed.connect(self.seed_dialog.current_game_seed)
+        self.seed_dialog.set_next_seed.connect(self.ui.frame_Board.set_next_seed)
 
         self.adjustSize()
 
