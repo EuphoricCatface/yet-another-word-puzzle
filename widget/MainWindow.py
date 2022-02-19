@@ -28,21 +28,30 @@ class GetSetRandDialog(QDialog):
         self.layout.addWidget(self.get_seed_lineedit)
 
         self.set_seed_label = QLabel()
-        self.set_seed_label.setText("Next seed:")
+        self.set_seed_label_default = "Next seed:"
+        self.set_seed_label.setText(self.set_seed_label_default)
         self.layout.addWidget(self.set_seed_label)
         self.set_seed_lineedit = QLineEdit()
         self.layout.addWidget(self.set_seed_lineedit)
 
         self.seed_input_check = False
+
         self.set_seed_lineedit.textChanged.connect(self.input_seed_confirm)
         self.persist_check = QCheckBox()
-        self.persist_check.setText("Repeat seed")
+        self.persist_check.setText("Keep same seed")
         self.persist_check.setEnabled(False)
         self.layout.addWidget(self.persist_check)
 
     @Slot(str)
     def update_current_seed(self, seed):
         self.get_seed_lineedit.setText(seed)
+
+        if not self.seed_input_check and self.set_seed_lineedit.text():
+            # Tooltip does not show (under wayland), probably because this dialog is not active
+            # QToolTip.showText(self.mapToGlobal(self.persist_check.pos()), "Invalid seed - seed not applied!")
+            self.set_seed_label.setText("Invalid seed - not applied!")
+            QTimer.singleShot(2000, lambda: self.set_seed_label.setText(self.set_seed_label_default))
+            return
 
         if self.persist_check.checkState():
             self.set_next_seed.emit(self.set_seed_lineedit.text())
@@ -62,12 +71,6 @@ class GetSetRandDialog(QDialog):
         except ValueError:
             check_fail = True
 
-        # TODO: show tooltip when a seed was not applied on new game
-        # if check_fail:
-        #     QToolTip.showText(self.confirm_check.pos(), "Invalid Seed!")
-        #     # QTimer: resolve race condition with persist_check (i.e. "Repeat seed") setEnable
-        #     QTimer.singleShot(0, lambda: self.confirm_check.setChecked(0))
-        #     return
         self.persist_check.setEnabled(not check_fail)
         if check_fail:
             self.set_seed_lineedit.setStyleSheet("font: italic; color: red")
