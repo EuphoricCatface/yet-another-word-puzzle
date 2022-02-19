@@ -70,7 +70,6 @@ class Board:
         self.move_history: Board.History | None = None
 
     def game_setup(self, seed=None):
-        # TODO: add seeded random
         self.random = Board.Random(seed)
         self.move_history = Board.History(self.random.seed)
         self.empty()
