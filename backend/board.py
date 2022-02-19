@@ -32,7 +32,7 @@ THE_LETTER_FREQ = [
 
 class Tile:
     # Simple class to handle {double,triple} {letter,word} bonuses
-    def __init__(self, letter_ord, bonus: None | str = None):
+    def __init__(self, letter_ord, bonus: str = None):
         # A tile cannot have bonus while being an empty one
         assert not (letter_ord == 0 and bonus is not None)
 
@@ -421,20 +421,20 @@ def test_main():
                 cmd = input("move? ")
                 cmd.strip()
                 cmd_list = cmd.split()
-                match cmd_list[0]:
-                    case 'S':
+                if True:
+                    if cmd_list[0] == 'S':
                         board.start_select(int(cmd_list[1]), int(cmd_list[2]))
-                    case 'N':
+                    if cmd_list[0] == 'N':
                         board.next_select(int(cmd_list[1]), int(cmd_list[2]))
-                    case 'E':
+                    if cmd_list[0] == 'E':
                         board.end_select()
                         print(board.get_current_word())
                         end_turn = True
                         break
-                    case 'R':
+                    if cmd_list[0] == 'R':
                         board.redo()
                         board.eliminate_empty()
-                    case 'U':
+                    if cmd_list[0] == 'U':
                         board.undo()
             if end_turn:
                 ret = board.eval_after_select()
