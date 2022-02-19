@@ -87,6 +87,7 @@
      <string>Game</string>
     </property>
     <addaction name="actionNew"/>
+    <addaction name="actionSet_Get_seed"/>
    </widget>
    <widget class="QMenu" name="menuUndo">
     <property name="title">
@@ -121,6 +122,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionSet_Get_seed">
+   <property name="text">
+    <string>Set/Get seed...</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
    </property>
   </action>
  </widget>
