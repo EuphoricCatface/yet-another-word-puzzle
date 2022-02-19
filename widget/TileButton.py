@@ -21,7 +21,7 @@ class TileButton(QPushButton):
         self.bonus_label = QLabel(self)
         self.bonus_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.setStyleSheet("font: bold")
-        self.is_word = False
+        self.bonus: str | None = None
 
     def resizeEvent(self, event:QResizeEvent) -> None:
         self.letter_label_resize()
@@ -39,7 +39,7 @@ class TileButton(QPushButton):
     def bonus_label_resize(self):
         sz = self.size()
         self.bonus_label.setGeometry(
-            sz.width() - sz.width() // 3, sz.height() // 2 if self.is_word else 0,
+            sz.width() - sz.width() // 3, sz.height() // 2 if self.bonus and self.bonus[1] == 'W' else 0,
             sz.width() // 3, sz.height() // 2
         )
 
@@ -71,18 +71,18 @@ class TileButton(QPushButton):
 
     def set_tile(self, tile: Tile):
         self.set_ascii(tile.letter_ord)
+        self.bonus = tile.bonus
 
-        if not tile.bonus:
+        if not self.bonus:
             self.bonus_label.hide()
             return
 
         self.bonus_label.setText(tile.bonus)
         style_sheet = "font: 8px; color: white"
-        if tile.bonus[0] == 'T':
+        if self.bonus[0] == 'T':
             style_sheet = "background-color: red; " + style_sheet
-        elif tile.bonus[0] == 'D':
+        elif self.bonus[0] == 'D':
             style_sheet = "background-color: blue; " + style_sheet
-        self.is_word = tile.bonus[1] == 'W'
         self.bonus_label.setStyleSheet(style_sheet)
         self.bonus_label.show()
 
