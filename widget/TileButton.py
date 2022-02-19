@@ -84,6 +84,7 @@ class TileButton(QPushButton):
         elif self.bonus[0] == 'D':
             style_sheet = "background-color: blue; " + style_sheet
         self.bonus_label.setStyleSheet(style_sheet)
+        self.bonus_label_resize()
         self.bonus_label.show()
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
