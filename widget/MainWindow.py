@@ -33,18 +33,15 @@ class GetSetRandDialog(QDialog):
         self.set_seed_lineedit = QLineEdit()
         self.layout.addWidget(self.set_seed_lineedit)
 
-        self.confirm_check = QCheckBox()
-        self.confirm_check.setText("Apply")
-        self.confirm_check.stateChanged.connect(self.input_seed_confirm)
-        self.layout.addWidget(self.confirm_check)
+        self.seed_input_check = False
+        self.set_seed_lineedit.textChanged.connect(self.input_seed_confirm)
         self.persist_check = QCheckBox()
         self.persist_check.setText("Repeat seed")
         self.persist_check.setEnabled(False)
         self.layout.addWidget(self.persist_check)
-        self.confirm_check.stateChanged.connect(self.persist_check.setEnabled)
 
     @Slot(str)
-    def current_game_seed(self, seed):
+    def update_current_seed(self, seed):
         self.get_seed_lineedit.setText(seed)
 
         if self.persist_check.checkState():
@@ -52,13 +49,10 @@ class GetSetRandDialog(QDialog):
             return
 
         self.set_seed_lineedit.clear()
-        self.confirm_check.setChecked(False)
 
     @Slot(bool)
-    def input_seed_confirm(self, check):
-        if not check:
-            self.set_next_seed.emit("")
-
+    def input_seed_confirm(self):
+        print("input checking")
         seed = self.set_seed_lineedit.text()
         check_fail = False
         if len(seed) != 32:
@@ -68,13 +62,25 @@ class GetSetRandDialog(QDialog):
         except ValueError:
             check_fail = True
 
+        # TODO: show tooltip when a seed was not applied on new game
+        # if check_fail:
+        #     QToolTip.showText(self.confirm_check.pos(), "Invalid Seed!")
+        #     # QTimer: resolve race condition with persist_check (i.e. "Repeat seed") setEnable
+        #     QTimer.singleShot(0, lambda: self.confirm_check.setChecked(0))
+        #     return
+        self.persist_check.setEnabled(not check_fail)
         if check_fail:
-            QToolTip.showText(self.confirm_check.pos(), "Invalid Seed!")
-            # QTimer: resolve race condition with persist_check (i.e. "Repeat seed") setEnable
-            QTimer.singleShot(0, lambda: self.confirm_check.setChecked(0))
+            self.set_seed_lineedit.setStyleSheet("font: italic; color: red")
+            if self.seed_input_check:
+                self.persist_check.setEnabled(False)
+                self.set_next_seed.emit("")
+                print("seed unset")
+            self.seed_input_check = False
             return
 
+        self.set_seed_lineedit.setStyleSheet("color: black")
         self.set_next_seed.emit(seed)
+        self.seed_input_check = True
 
 
 class MainWindow(QMainWindow):
@@ -111,7 +117,7 @@ class MainWindow(QMainWindow):
 
         self.seed_dialog = GetSetRandDialog(self)
         self.ui.actionSet_Get_seed.triggered.connect(self.seed_dialog.show)
-        self.ui.frame_Board.current_game_seed.connect(self.seed_dialog.current_game_seed)
+        self.ui.frame_Board.current_game_seed.connect(self.seed_dialog.update_current_seed)
         self.seed_dialog.set_next_seed.connect(self.ui.frame_Board.set_next_seed)
 
         self.adjustSize()
