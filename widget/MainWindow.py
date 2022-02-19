@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QDialog
-from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox, QToolTip
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox
 from PySide6.QtCore import QObject, QTimer, Slot, Signal
 
 from widget.ui_MainWindow import Ui_MainWindow
