@@ -1,5 +1,7 @@
 import os.path
 
+DICTIONARY_IS_UPPERCASE = True
+
 
 class Evaluation:
     # Empty if before loading, None if failed to load
@@ -25,15 +27,19 @@ class Evaluation:
                 if len(line) <= 2:
                     continue
                 cls.dict.add(line)
-        print(f"dictionary loaded: {len(cls.dict)} words total")
+        print(f"Words loaded from dictionary.txt: {len(cls.dict)} words total")
+        print("(Words shorter than 3 letters are omitted)")
 
     def __init__(self):
         pass
 
     @classmethod
-    def eval(cls, word):
+    def eval(cls, word: str):
         if cls.dict is None:
             return True
+
+        if not DICTIONARY_IS_UPPERCASE:
+            word = word.lower()
         if not cls.dict:
             cls.load()
         return word in cls.dict
