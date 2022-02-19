@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QMainWindow, QDialog
-from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox
-from PySide6.QtCore import QObject, QTimer, Slot, Signal
+from PySide2.QtWidgets import QMainWindow, QDialog
+from PySide2.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox
+from PySide2.QtCore import QObject, QTimer, Slot, Signal
 
 from widget.ui_MainWindow import Ui_MainWindow
 
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setWindowTitle(QObject.tr("Puzzle Test"))
+        self.setWindowTitle(("Puzzle Test"))
 
         self.ui.frame_Board.score_add.connect(self.ui.frame_Top.add_score)
         self.ui.frame_Board.score_undo.connect(self.ui.frame_Top.score_undo)

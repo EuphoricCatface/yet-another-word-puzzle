@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 from widget.MainWindow import MainWindow
 
 
@@ -8,7 +8,7 @@ def main():
     main_window = MainWindow(None)
     main_window.show()
 
-    return app.exec()
+    return app.exec_()
 
 
 if __name__ == "__main__":

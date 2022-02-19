@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QPushButton, QLabel
+from PySide2.QtWidgets import QPushButton, QLabel
 
-from PySide6.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent, QResizeEvent
-from PySide6.QtCore import Qt
+from PySide2.QtGui import QMouseEvent, QDragEnterEvent, QDropEvent, QResizeEvent
+from PySide2.QtCore import Qt
 from backend.board import LETTER_SCORE, Tile
 
 

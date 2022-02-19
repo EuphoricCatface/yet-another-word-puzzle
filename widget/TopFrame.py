@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QFrame
-from PySide6.QtCore import Slot, Signal, QTimer
+from PySide2.QtWidgets import QFrame
+from PySide2.QtCore import Slot, Signal, QTimer
 from widget.ui_TopFrame import Ui_Frame
 
 import time

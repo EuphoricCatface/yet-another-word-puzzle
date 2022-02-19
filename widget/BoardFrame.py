@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QFrame
-from PySide6.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtCore import QMimeData, QByteArray, QPoint
-from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QEasingCurve
+from PySide2.QtWidgets import QFrame
+from PySide2.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragLeaveEvent
+from PySide2.QtCore import Qt, Signal, Slot
+from PySide2.QtCore import QMimeData, QByteArray, QPoint
+from PySide2.QtCore import QParallelAnimationGroup, QPropertyAnimation, QEasingCurve
 from widget import TileButton
 
 from backend import board
@@ -127,7 +127,7 @@ class BoardWidget(QFrame):
                 target.y_board -= distance
                 if target.y_board < TILE_ROWS:
                     target.show()
-                animation = QPropertyAnimation(target, QByteArray('pos'), target)
+                animation = QPropertyAnimation(target, QByteArray(b'pos'), target)
                 self.drop_animation_group.addAnimation(
                     animate(target.pos(), distance, animation)
                 )
@@ -162,7 +162,7 @@ class BoardWidget(QFrame):
         mime_data.setData("application/x-puzzletile", item_data)
         drag = QDrag(self)
         drag.setMimeData(mime_data)
-        drag.exec(Qt.MoveAction)
+        drag.exec_(Qt.MoveAction)
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         if event.source() != self:
