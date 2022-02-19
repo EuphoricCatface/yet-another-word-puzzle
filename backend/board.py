@@ -76,6 +76,7 @@ class Board:
         self.empty()
         self.selection_seq_clear()
         self.is_selecting = False
+        return self.random.seed
 
     def empty(self):
         self.columns = [[Tile(0) for _ in range(BOARD_HEIGHT)] for _ in range(BOARD_WIDTH)]

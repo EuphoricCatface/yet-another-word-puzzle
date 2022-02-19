@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QDialog
 from PySide6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QCheckBox
-from PySide6.QtCore import QObject, QTimer
+from PySide6.QtCore import QObject, QTimer, Slot
 
 from widget.ui_MainWindow import Ui_MainWindow
 
@@ -19,6 +19,10 @@ class GetSetRandDialog(QDialog):
         self.layout.addWidget(self.get_seed_label)
         self.get_seed_lineedit = QLineEdit()
         self.get_seed_lineedit.setReadOnly(True)
+        self.get_seed_lineedit.setPlaceholderText("N/A")
+        # QTimer: resolve race condition with default mousePressEvent
+        self.get_seed_lineedit.focusInEvent = lambda e: \
+            QTimer.singleShot(0, self.get_seed_lineedit.selectAll)
         self.layout.addWidget(self.get_seed_lineedit)
 
         self.set_seed_label = QLabel()
@@ -35,6 +39,10 @@ class GetSetRandDialog(QDialog):
         self.persist_check.setEnabled(False)
         self.layout.addWidget(self.persist_check)
         self.confirm_check.stateChanged.connect(self.persist_check.setEnabled)
+
+    @Slot(str)
+    def current_game_seed(self, seed):
+        self.get_seed_lineedit.setText(seed)
 
 
 class MainWindow(QMainWindow):
@@ -71,6 +79,7 @@ class MainWindow(QMainWindow):
 
         self.seed_dialog = GetSetRandDialog(self)
         self.ui.actionSet_Get_seed.triggered.connect(self.seed_dialog.show)
+        self.ui.frame_Board.current_game_seed.connect(self.seed_dialog.current_game_seed)
 
         self.adjustSize()
 

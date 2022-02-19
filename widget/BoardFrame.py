@@ -17,6 +17,7 @@ class BoardWidget(QFrame):
     char_list_deactivate = Signal()
     score_add = Signal(int)
     score_undo = Signal(int)
+    current_game_seed = Signal(str)
 
     def __init__(self, parent):
         super(BoardWidget, self).__init__(parent)
@@ -44,14 +45,19 @@ class BoardWidget(QFrame):
 
     @Slot()
     def game_init(self):
+        seed = None
         self.setEnabled(True)
         if self.next_game_seed:
-            self.board.game_setup(self.next_game_seed)
+            seed = self.board.game_setup(self.next_game_seed)
+            assert seed == self.next_game_seed
+            self.next_game_seed = None
         else:
-            self.board.game_setup()
+            seed = self.board.game_setup()
         self.board.fill_prepare()
         self.board_sync()
         self.drop_animation()
+
+        self.current_game_seed.emit(seed)
 
     @Slot(str)
     def set_seed(self, seed: str):
