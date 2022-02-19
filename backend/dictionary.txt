@@ -1,1 +1,17 @@
 # Dictionary is removed, because the author didn't know what to do with the license problem ;)
+# You can put any list of words with newline as seperator.
+# Any line to start with # will be ignored.
+#
+# The game assumes the words are in uppercase by default.
+# To use lowercase dictionary, go to `dictionary.txt` and change line three, `DICTIONARY_IS_UPPERCASE = True`.
+
+DUMMY
+WORD
+LIST
+
+# Some sources I've found:
+# https://github.com/dwyl/english-words/blob/master/words_alpha.txt - 370,102 words
+# https://github.com/scribble-rs/scribble.rs/blob/master/game/words/en_us - 5,000 words
+# https://boardgames.stackexchange.com/questions/38366/latest-collins-scrabble-words-list-in-text-file - 279,496 words (possibly copyrighted)
+# http://www.nongnu.org/eliot/en/index.html - 270163 words (compiled using their own `compdic` utility)
+# The game will omit words shorter than 3 letters, so its terminal output will probably say a bit smaller number than total word count.
